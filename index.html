@@ -1,70 +1,137 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Meus Links</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: linear-gradient(135deg, #000000, #4E47D1);
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 40px 20px;
-    }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Élivekeys - Página Oficial</title>
 
-    .avatar {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      background: #fff;
-      margin-bottom: 20px;
-    }
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
 
-    h1 {
-      margin: 10px 0 20px;
-      font-size: 28px;
-      text-align: center;
-    }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 30px;
+        }
 
-    .link {
-      width: 100%;
-      max-width: 350px;
-      background: #fff;
-      color: #333;
-      text-decoration: none;
-      padding: 15px;
-      margin: 10px 0;
-      border-radius: 10px;
-      font-size: 18px;
-      text-align: center;
-      transition: 0.2s;
-      font-weight: bold;
-    }
+        .logo {
+            width: 120px;
+            height: 120px;
+            border-radius: 100%;
+            object-fit: cover;
+            margin: 0 auto 20px auto;
+        }
 
-    .link:hover {
-      background: #e5e5e5;
-      transform: scale(1.03);
-    }
-  </style>
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        p {
+            line-height: 1.5;
+        }
+
+        .link {
+            display: block;
+            background: #000;
+            color: #fff;
+            text-decoration: none;
+            padding: 14px;
+            margin: 12px 0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        .link:hover {
+            opacity: 0.8;
+        }
+
+        .section {
+            background: #fff;
+            padding: 18px;
+            margin-top: 25px;
+            border-radius: 10px;
+            text-align: left;
+        }
+
+        .section h2 {
+            margin-top: 0;
+        }
+
+        footer {
+            margin-top: 40px;
+            font-size: 12px;
+            color: #888;
+        }
+    </style>
 </head>
+
 <body>
+    <div class="container">
+        
+        <!-- LOGO -->
+        <img class="logo" src="logo.png" alt="Logo da empresa">
 
-  <!-- Foto ou avatar -->
-  <div class="avatar"></div>
+        <!-- NOME DA EMPRESA -->
+        <h1>Élivekeys Codes</h1>
+        <p>Bem-vindo(a). Aqui você encontra todas as informações e políticas exigidas para verificação.</p>
+       
+        <!-- SOBRE A EMPRESA -->
+        <div class="section">
+            <h2>Sobre a Empresa</h2>
+            <p>
+                Oferecemos produtos/serviços no segmento de Softwares.  
+                Vendemos: Macros Solicitados pelos Clientes, Jogos e mais.
+            </p>
+        </div>
 
-  <!-- Nome -->
-  <h1>Seu Nome Aqui</h1>
+        <!-- CONTATO -->
+        <div class="section">
+            <h2>Contato para Atendimento</h2>
+            <p>E-mail: douglasleal855@gmail.com</p>
+            <p>WhatsApp: +55 (51) 99521-8586</p>
+            <p>Endereço: Rua Exemplo, 123 – Cidade – Estado – País</p>
+        </div>
 
-  <!-- Meus links -->
-  <a class="link" href="#">Instagram</a>
-  <a class="link" href="#">WhatsApp</a>
-  <a class="link" href="#">TikTok</a>
-  <a class="link" href="#">YouTube</a>
+        <!-- POLÍTICAS -->
+        <div class="section">
+            <h2>Política de Reembolsos</h2>
+            <p>
+                Não aceitamos pedidos de reembolso após a compra.  
+                Dúvias entre em contato pelo e-mail acima.
+            </p>
 
+            <h2>Política de Devoluções (para produtos físicos)</h2>
+            <p>
+                Devoluções podem ser realizadas em até X dias caso o produto apresente defeito ou não corresponda ao anúncio.
+            </p>
+
+            <h2>Política de Cancelamento</h2>
+            <p>
+                Assinaturas e serviços podem ser cancelados mediante solicitação por e-mail, com aviso prévio de X dias.
+            </p>
+
+            <h2>Restrições legais ou de exportação</h2>
+            <p>
+                Determinados produtos podem ter restrições de venda para alguns países conforme legislação local.
+            </p>
+
+            <h2>Promoções, Termos e Condições</h2>
+            <p>
+                Promoções podem exigir regras específicas, sempre informadas no ato da oferta.
+            </p>
+        </div>
+
+        <footer>
+            © 2025 Douglas Leal Peres
+        </footer>
+    </div>
 </body>
 </html>
-
