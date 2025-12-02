@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meu Linktree</title>
+    <title>Astk_HIHIHA</title>
 
     <style>
         :root {
@@ -40,6 +40,38 @@
             margin-bottom: 30px;
         }
 
+        /* Botão de tema (lâmpada) */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: none;
+            background-color: var(--card-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0,0,0,0.4);
+            transition: 0.3s ease;
+        }
+
+        .theme-toggle img {
+            width: 24px;
+            height: 24px;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.08);
+        }
+
+        .light .theme-toggle {
+            background-color: var(--card-light);
+        }
+
+        /* Links estilo Linktree */
         .link-card {
             background-color: var(--card-dark);
             padding: 15px 20px;
@@ -58,46 +90,15 @@
             transform: translateY(-3px);
         }
 
-        /* Botão Toggle */
-        .toggle-btn {
-            cursor: pointer;
-            background: transparent;
-            border: 1px solid var(--accent);
-            padding: 10px 16px;
-            border-radius: 8px;
-            color: var(--accent);
-            font-size: 14px;
-            transition: 0.2s ease;
-            margin-bottom: 25px;
+        /* Logo */
+        .logo {
+            width: 120px;
+            height: auto;
+            margin-bottom: 20px;
+            border-radius: 50%;
         }
 
-        .toggle-btn:hover {
-            background: var(--accent);
-            color: #fff;
-        }
-
-        /* Tema claro */
-        .light {
-            background-color: var(--bg-light);
-            color: var(--text-light);
-        }
-
-        .light .link-card {
-            background-color: var(--card-light);
-            color: var(--text-light);
-        }
-
-        .light .toggle-btn {
-            border-color: #0077cc;
-            color: #0077cc;
-        }
-
-        .light .toggle-btn:hover {
-            background: #0077cc;
-            color: #fff;
-        }
-
-        /* Nova área de texto */
+        /* Área de texto */
         .text-area {
             margin-top: 40px;
             background-color: var(--card-dark);
@@ -110,34 +111,63 @@
 
         .light .text-area {
             background-color: var(--card-light);
+            color: var(--text-light);
+        }
+
+        /* Tema claro */
+        .light {
+            background-color: var(--bg-light);
+            color: var(--text-light);
+        }
+
+        .light .link-card {
+            background-color: var(--card-light);
+            color: var(--text-light);
         }
     </style>
 </head>
 
 <body>
-    <button class="toggle-btn" onclick="toggleTheme()">Alternar tema</button>
+
+    <!-- Botão de tema com ícone dinâmico -->
+    <button class="theme-toggle" onclick="toggleTheme()">
+        <img id="theme-icon" src="lampada-off.png" alt="Trocar tema">
+    </button>
 
     <div class="container">
-        <h1>Meus Links</h1>
+
+        <!-- Logo opcional -->
+        <img src="logo.png" alt="Logo" class="logo">
+
+        <h1>Redes e Contato</h1>
 
         <a href="#" class="link-card">Instagram</a>
         <a href="#" class="link-card">YouTube</a>
         <a href="#" class="link-card">Portfólio</a>
         <a href="#" class="link-card">Contato</a>
 
-        <!-- Nova área para você escrever -->
+        <!-- Área extra para escrever -->
         <div class="text-area">
-            <h2>Sobre mim</h2>
+            <h2>O que faço?</h2>
             <p>
-                Aqui você pode escrever qualquer texto, biografia, anúncio, lembrete ou recado.
-                Basta editar este conteúdo no arquivo HTML.
+                Além de vendas pela internet, também faço programação, especificamente automações via Autohotkey v1, para Roblox, entre no discord e faça parte da nosso comunidade!
             </p>
         </div>
+
     </div>
 
     <script>
         function toggleTheme() {
-            document.body.classList.toggle("light");
+            const body = document.body;
+            const icon = document.getElementById("theme-icon");
+
+            body.classList.toggle("light");
+
+            if (body.classList.contains("light")) {
+                icon.src = "lampada-on.png";  // ícone aceso no modo claro
+            } else {
+                icon.src = "lampada-off.png"; // ícone apagado no modo escuro
+            }
         }
     </script>
 
