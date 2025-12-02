@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Astk_HIHIHA</title>
+    <title>AstkHIHIHA</title>
 
     <!-- Fonte Premium -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
@@ -13,11 +13,6 @@
             --bg-dark: #0d0d0d;
             --text-dark: #f5f5f5;
             --card-dark: #1a1a1a;
-
-            --bg-light: #f5f5f5;
-            --text-light: #0d0d0d;
-            --card-light: #ffffff;
-
             --accent: #4da6ff;
         }
 
@@ -49,37 +44,6 @@
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Botão de tema (lâmpada) */
-        .theme-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            border: none;
-            background-color: var(--card-dark);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            box-shadow: 0 0 10px rgba(0,0,0,0.4);
-            transition: 0.3s ease;
-        }
-
-        .theme-toggle img {
-            width: 25px;
-            height: 25px;
-        }
-
-        .theme-toggle:hover {
-            transform: scale(1.1) rotate(5deg);
-        }
-
-        .light .theme-toggle {
-            background-color: var(--card-light);
         }
 
         /* Links estilo Linktree Premium */
@@ -131,34 +95,37 @@
             transition: 0.3s;
         }
 
-        .light .text-area {
-            background-color: var(--card-light);
-            color: var(--text-light);
+        /* Rodapé premium */
+        .footer {
+            margin-top: 60px;
+            padding: 20px 0;
+            color: #cccccc;
+            font-size: 14px;
+            opacity: 0.75;
+            text-align: center;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            width: 100%;
+            max-width: 500px;
         }
 
-        /* Tema claro */
-        .light {
-            background-color: var(--bg-light);
-            color: var(--text-light);
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+            transition: 0.25s ease;
         }
 
-        .light .link-card {
-            background-color: var(--card-light);
-            color: var(--text-light);
+        .footer a:hover {
+            opacity: 1;
+            text-decoration: underline;
         }
     </style>
 </head>
 
 <body>
 
-    <!-- Botão de tema com ícone dinâmico -->
-    <button class="theme-toggle" onclick="toggleTheme()">
-        <img id="theme-icon" src="lampada-off.png" alt="Trocar tema">
-    </button>
-
     <div class="container">
 
-        <!-- Logo opcional -->
+        <!-- Logo -->
         <img src="logo.png" alt="Logo" class="logo">
 
         <h1>Redes e Contato</h1>
@@ -191,20 +158,11 @@
 
     </div>
 
-    <script>
-        function toggleTheme() {
-            const body = document.body;
-            const icon = document.getElementById("theme-icon");
-
-            body.classList.toggle("light");
-
-            if (body.classList.contains("light")) {
-                icon.src = "lampada-on.png";  
-            } else {
-                icon.src = "lampada-off.png";
-            }
-        }
-    </script>
+    <!-- RODAPÉ MINIMALISTA PREMIUM -->
+    <div class="footer">
+        © 2025 Astk_HIHIHA — Todos os direitos reservados.
+    </div>
 
 </body>
 </html>
+
