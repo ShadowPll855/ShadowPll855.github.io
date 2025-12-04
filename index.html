@@ -1,123 +1,209 @@
-<style>
-    :root {
-        --text-light: #f2f2f2;
-        --card-dark: rgba(0, 0, 0, 0.55);
-        --accent: #4da6ff;
-    }
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Douglas Peres - Official Website</title>
 
-    body {
-        <div class="animated-bg"></div>
-        margin: 0;
-        padding: 0;
-        text-align: center;
-        font-family: Arial, sans-serif;
-        color: var(--text-light);
-        overflow-x: hidden;
-        position: relative;
-    }
+    <style>
+        :root {
+            --text-light: #f2f2f2;
+            --accent: #4da6ff;
+        }
 
-    /* FUNDO ANIMADO COM BLUR */
-    .animated-bg {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 110%;
-        height: 110%;
-        background-image: url('/mnt/data/fundo-site.png');
-        background-size: cover;
-        background-position: center;
-        filter: blur(18px) brightness(0.55);
-        z-index: -2;
-        animation: bgMove 25s ease-in-out infinite alternate;
-    }
+        body {
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            font-family: Arial, sans-serif;
+            color: var(--text-light);
+            overflow-x: hidden;
+            position: relative;
+        }
 
-    @keyframes bgMove {
-        0%   { transform: scale(1) translate(0, 0); }
-        50%  { transform: scale(1.08) translate(-12px, -12px); }
-        100% { transform: scale(1.12) translate(12px, 12px); }
-    }
+        /* FUNDO ANIMADO COM BLUR */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 115%;
+            height: 115%;
+            background-image: url('/mnt/data/fundo-site.png');
+            background-size: cover;
+            background-position: center;
+            filter: blur(18px) brightness(0.45);
+            z-index: -2;
+            animation: bgMove 22s ease-in-out infinite alternate;
+        }
 
-    .container {
-        max-width: 600px;
-        margin: auto;
-        padding: 30px;
-        backdrop-filter: blur(4px);
-    }
+        @keyframes bgMove {
+            0%   { transform: scale(1) translate(0, 0); }
+            50%  { transform: scale(1.12) translate(-18px, -18px); }
+            100% { transform: scale(1.18) translate(18px, 18px); }
+        }
 
-    /* LOGO COM BORDA ANIMADA */
-    .logo-wrapper {
-        position: relative;
-        width: 150px;
-        height: 150px;
-        margin: 0 auto 20px auto;
-    }
+        .container {
+            max-width: 650px;
+            margin: auto;
+            padding: 30px;
+            backdrop-filter: blur(4px);
+        }
 
-    .logo-wrapper::before {
-        content: "";
-        position: absolute;
-        inset: -4px;
-        border-radius: 50%;
-        padding: 2px;
-        background: conic-gradient(#ffd700, #8000ff, #ffd700);
-        -webkit-mask: 
-            linear-gradient(#fff 0 0) content-box, 
-            linear-gradient(#fff 0 0);
-        -webkit-mask-composite: xor;
-        mask-composite: exclude;
-        animation: rotate 3.5s linear infinite;
-    }
+        /* LOGO COM BORDA ANIMADA */
+        .logo-wrapper {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 20px auto;
+        }
 
-    @keyframes rotate {
-        to { transform: rotate(360deg); }
-    }
+        .logo-wrapper::before {
+            content: "";
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            padding: 2px;
+            background: conic-gradient(#ffd700, #8a00ff, #ffd700);
+            -webkit-mask:
+                linear-gradient(#fff 0 0) content-box,
+                linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            animation: rotate 3.5s linear infinite;
+        }
 
-    .logo {
-        width: 150px;
-        height: 150px;
-        border-radius: 100%;
-        object-fit: cover;
-        border: none;
-        position: relative;
-        z-index: 2;
-    }
+        @keyframes rotate {
+            to { transform: rotate(360deg); }
+        }
 
-    .section {
-        background: var(--card-dark);
-        padding: 20px;
-        margin-top: 25px;
-        border-radius: 12px;
-        text-align: left;
-        border: 1px solid rgba(255,255,255,0.18);
-        box-shadow: 0 0 18px rgba(0,0,0,0.35);
-    }
+        .logo {
+            width: 150px;
+            height: 150px;
+            border-radius: 100%;
+            object-fit: cover;
+            position: relative;
+            z-index: 2;
+        }
 
-    .section h2 {
-        color: var(--accent);
-    }
+        p {
+            line-height: 1.6;
+            color: #e8e8e8;
+        }
 
-    .link-card {
-        background-color: rgba(0,0,0,0.45);
-        padding: 15px 20px;
-        border-radius: 12px;
-        margin: 15px 0;
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        color: var(--text-light);
-        font-size: 18px;
-        border: 1px solid rgba(255,255,255,0.15);
-        transition: 0.25s;
-    }
+        /* CARDS AJUSTADOS */
+        .section, .link-card {
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(6px);
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.14);
+            box-shadow: 0 0 14px rgba(0,0,0,0.45);
+        }
 
-    .link-card:hover {
-        border-color: var(--accent);
-        transform: translateY(-4px);
-        background-color: rgba(0,0,0,0.6);
-    }
+        .section {
+            padding: 20px;
+            margin-top: 25px;
+            text-align: left;
+        }
 
-    footer {
-        margin-top: 40px;
-        font-size: 12px;
-        color: #ccc;
-    }
-</style>
+        .section h2 {
+            color: var(--accent);
+            margin-top: 0;
+        }
+
+        .link-card {
+            padding: 15px 20px;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            text-decoration: none;
+            color: var(--text-light);
+            font-size: 18px;
+            transition: 0.25s;
+        }
+
+        .link-card img {
+            width: 32px;
+            height: 32px;
+        }
+
+        .link-card:hover {
+            transform: translateY(-4px);
+            background: rgba(0, 0, 0, 0.75);
+            border-color: var(--accent);
+        }
+
+        footer {
+            margin-top: 40px;
+            font-size: 12px;
+            color: #ddd;
+        }
+
+        /* ANIMAÇÃO FADE-IN */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            opacity: 0;
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- FUNDO -->
+    <div class="animated-bg"></div>
+
+    <div class="container fade-in" style="animation-delay: 0s;">
+
+        <div class="logo-wrapper fade-in" style="animation-delay: 0.1s;">
+            <img class="logo" src="logo.png" alt="Logo da empresa">
+        </div>
+
+        <h1 class="fade-in" style="animation-delay: 0.2s;">Douglas Peres</h1>
+        <p class="fade-in" style="animation-delay: 0.3s;">
+            Seja Bem-vindo(a) ao meu website, aqui te apresento minhas capacidades.
+        </p>
+
+        <div class="section fade-in" style="animation-delay: 0.4s;">
+            <h2>Me conheça!</h2>
+            <p>
+                Meu nome é Douglas, tenho 21 anos e atualmente trabalho como secretário em uma empresa,
+                onde desenvolvo habilidades de organização, comunicação e atendimento. Estou me dedicando
+                a migrar para a área digital e pretendo trabalhar criando landing pages estáticas e de venda.
+                Quero oferecer páginas modernas, objetivas e bem estruturadas, ajudando negócios a melhorarem
+                sua presença online e alcançarem mais resultados.
+            </p>
+        </div>
+
+        <div class="section fade-in" style="animation-delay: 0.5s;">
+            <h2>Contatos</h2>
+            <p>E-mail: douglasleal855@gmail.com</p>
+
+            <a href="https://discord.gg/WsHprBwD" class="link-card fade-in" style="animation-delay: 0.6s;" target="_blank">
+                <img src="discord.png" alt="Discord">
+                Discord
+            </a>
+        </div>
+
+        <div class="section fade-in" style="animation-delay: 0.7s;">
+            <h2>Meus Trabalhos</h2>
+            <p>
+                Atualmente estou iniciando meus trabalhos na criação de websites e, por enquanto, possuo um projeto
+                publicado e este próprio website. Ele representa meu estilo de desenvolvimento: páginas limpas,
+                organizadas e voltadas para uma boa experiência do usuário.
+                <br><br>
+                Veja: https://elivekeys.github.io/
+            </p>
+        </div>
+
+        <footer class="fade-in" style="animation-delay: 0.8s;">
+            © 2025 Douglas Peres
+        </footer>
+
+    </div>
+</body>
+</html>
