@@ -3,50 +3,51 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AstkHIh</title>
-
-    <!-- Fonte Premium -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>Douglas Peres - Official Website</title>
 
     <style>
         :root {
-            --bg-dark: #0d0d0d;
-            --text-dark: #f5f5f5;
+            --bg-dark: #0b0b0b;
+            --bg-gradient: linear-gradient(180deg, #0b0b0b 0%, #141414 100%);
+            --text-light: #f2f2f2;
             --card-dark: #1a1a1a;
             --accent: #4da6ff;
         }
 
         body {
             margin: 0;
-            font-family: "Inter", sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-dark);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 40px 20px;
-            transition: 0.3s ease;
+            padding: 0;
+            text-align: center;
+            background: var(--bg-gradient);
+            font-family: Arial, sans-serif;
+            color: var(--text-light);
         }
 
         .container {
-            max-width: 500px;
-            width: 100%;
-            text-align: center;
-            animation: fadeIn 0.9s ease forwards;
+            max-width: 600px;
+            margin: auto;
+            padding: 30px;
+        }
+
+        .logo {
+            width: 140px; 
+            height: 140px;
+            border-radius: 100%;
+            object-fit: cover;
+            margin: 0 auto 20px auto;
+            border: 3px solid var(--accent);
         }
 
         h1 {
-            margin-bottom: 30px;
-            font-weight: 600;
+            margin-bottom: 10px;
         }
 
-        /* Animação Premium */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        p {
+            line-height: 1.6;
+            color: #e0e0e0;
         }
 
-        /* Links estilo Linktree Premium */
+       
         .link-card {
             background-color: var(--card-dark);
             padding: 15px 20px;
@@ -55,115 +56,103 @@
             text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 12px;
-            color: var(--text-dark);
+            gap: 14px;
+            color: var(--text-light);
             font-size: 18px;
-            border: 1px solid transparent;
+            border: 1px solid #232323;
             transition: 0.25s cubic-bezier(0.4, 0.0, 0.2, 1);
             box-shadow: 0 0 0 rgba(0,0,0,0);
+            justify-content: flex-start;
         }
 
+        
         .link-card img {
-            width: 24px;
-            height: 24px;
+            width: 32px;
+            height: 32px;
         }
 
         .link-card:hover {
             border-color: var(--accent);
-            transform: translateY(-4px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+            box-shadow: 0 0 14px rgba(77, 166, 255, 0.35);
+            transform: translateY(-3px);
         }
 
-        /* Logo */
-        .logo {
-            width: 130px;
-            height: auto;
-            margin-bottom: 20px;
-            border-radius: 50%;
-            animation: fadeIn 1.2s ease forwards;
-        }
-
-        /* Área de texto */
-        .text-area {
-            margin-top: 40px;
-            background-color: var(--card-dark);
-            padding: 22px;
-            border-radius: 14px;
+        
+        .section {
+            background: #121212;
+            padding: 20px;
+            margin-top: 25px;
+            border-radius: 12px;
             text-align: left;
-            font-size: 16px;
-            line-height: 1.7;
-            transition: 0.3s;
+            border: 1px solid #222;
+            box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
         }
 
-        /* Rodapé premium */
-        .footer {
-            margin-top: 60px;
-            padding: 20px 0;
-            color: #cccccc;
-            font-size: 14px;
-            opacity: 0.75;
-            text-align: center;
-            border-top: 1px solid rgba(255,255,255,0.08);
-            width: 100%;
-            max-width: 500px;
-        }
-
-        .footer a {
+        .section h2 {
+            margin-top: 0;
             color: var(--accent);
-            text-decoration: none;
-            transition: 0.25s ease;
         }
 
-        .footer a:hover {
-            opacity: 1;
-            text-decoration: underline;
+        footer {
+            margin-top: 40px;
+            font-size: 12px;
+            color: #aaa;
+        }
+
+        /* ANIMAÇÃO FADE-IN */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            opacity: 0;
+            animation: fadeIn 0.8s ease-out forwards;
         }
     </style>
 </head>
 
 <body>
+    <div class="container fade-in" style="animation-delay: 0s;">
 
-    <div class="container">
+        
+        <img class="logo fade-in" style="animation-delay: 0.1s;" src="logo.png" alt="Logo da empresa">
 
-        <!-- Logo -->
-        <img src="logo.png" alt="Logo" class="logo">
+    
+        <h1 class="fade-in" style="animation-delay: 0.2s;">Douglas Peres</h1>
+        <p class="fade-in" style="animation-delay: 0.3s;">Seja Bem-vindo(a) ao meu website, aqui te apesento minhas capacidades.</p>
 
-        <h1>Redes e Contato</h1>
-
-        <!-- LINKS COM ÍCONES OFICIAIS COLORIDOS -->
-        <a href="https://www.tiktok.com/@astk_hihiha" class="link-card" target="_blank">
-            <img src="tiktok.png" alt="TikTok"> TikTok
-        </a>
-
-        <a href="https://www.youtube.com/@AstkAchados" class="link-card" target="_blank">
-            <img src="youtube.png" alt="YouTube"> YouTube
-        </a>
-
-        <a href="https://www.instagram.com/astk_hihiha/" class="link-card" target="_blank">
-            <img src="instagram.png" alt="Instagram"> Instagram
-        </a>
-
-        <a href="#" class="link-card" target="_blank">
-            <img src="discord.png" alt="Discord"> Discord
-        </a>
-
-        <!-- Área extra para escrever -->
-        <div class="text-area">
-            <h2>O que faço?</h2>
+        <!-- SOBRE -->
+        <div class="section fade-in" style="animation-delay: 0.4s;">
+            <h2>Me conheça!</h2>
             <p>
-                Além de vendas pela internet, também faço programação, especificamente automações via Autohotkey v1 para Roblox.
-                Entre no Discord e faça parte da nossa comunidade!
+                Meu nome é Douglas, tenho 21 anos e atualmente trabalho como secretário em uma empresa, onde desenvolvo habilidades de organização, comunicação e atendimento. Estou me dedicando a migrar para a área digital e pretendo trabalhar criando landing pages estáticas, e de venda. Quero oferecer páginas modernas, objetivas e bem estruturadas, ajudando negócios a melhorarem sua presença online e alcançarem mais resultados.
             </p>
         </div>
 
-    </div>
+        
+        <div class="section fade-in" style="animation-delay: 0.5s;">
+            <h2>Contatos</h2>
+            <p>E-mail: douglasleal855@gmail.com</p>
 
-    <!-- RODAPÉ MINIMALISTA PREMIUM -->
-    <div class="footer">
-        © 2025 Astk_HIHIHA — Todos os direitos reservados.
-    </div>
+            <a href="https://discord.gg/WsHprBwD" class="link-card fade-in" style="animation-delay: 0.6s;" target="_blank">
+                <img src="discord.png" alt="Discord">
+                Discord
+            </a>
+        </div>
 
+        
+        <div class="section fade-in" style="animation-delay: 0.7s;">
+            <h2>Meus Trabalhos</h2>
+            <p>
+                Atualmente estou iniciando meus trabalhos na criação de websites e, por enquanto, possuo um projeto publicado e este próprio website. Ele representa meu estilo de desenvolvimento: páginas limpas, organizadas e voltadas para uma boa experiência do usuário. Deixarei o link abaixo para visualização.
+                https://elivekeys.github.io/
+            </p>
+        </div>
+
+        <footer class="fade-in" style="animation-delay: 0.8s;">
+            © 2025 Douglas Peres
+        </footer>
+    </div>
 </body>
 </html>
-
-
