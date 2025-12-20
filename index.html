@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Race Game – IA Stream Safe (3 Faixas)</title>
+<title>Race Game – 3 Pistas (Stream Safe)</title>
 
 <style>
 body{
@@ -42,17 +42,18 @@ canvas{
 <div class="wrap">
   <div class="hud">
     <div>Pontos: <span id="score">0</span></div>
-    <div>Faixa IA: <span id="lane">1</span></div>
+    <div>Pista IA: <span id="lane">1</span></div>
   </div>
   <canvas id="game" width="480" height="800"></canvas>
-  <div class="note">3 faixas • spawn seguro • dificuldade fixa</div>
+  <div class="note">3 pistas • spawn controlado • infinito real</div>
 </div>
 
 <script>
 /* ================= CONFIG ================= */
 const LANES = 3;
-const SPEED = 380;          // dificuldade fixa
-const SPAWN_INTERVAL = 1.1; // ritmo fixo
+const SPEED = 360;             // dificuldade fixa
+const SPAWN_INTERVAL = 1.1;    // ritmo fixo
+const BLOCK_WINDOW = 240;      // altura mínima entre ondas
 
 /* ================= CANVAS ================= */
 const canvas = document.getElementById("game");
@@ -93,29 +94,29 @@ function laneCenter(lane){
   return left + laneW * (lane + 0.5);
 }
 
-/* ================= SPAWN INTELIGENTE ================= */
+/* ================= SPAWN VALIDADO ================= */
 /*
-  Gera uma "onda" de spawn:
-  - 1 ou 2 faixas aleatórias
-  - NUNCA 3
+  Cria uma "onda" de spawn:
+  - escolhe 1 ou 2 pistas aleatórias
+  - valida para nunca ocupar as 3
 */
 function spawnWave(){
   const lanes = [0,1,2];
 
-  // embaralha
+  // embaralha pistas
   for(let i=lanes.length-1;i>0;i--){
     const j = Math.floor(Math.random()*(i+1));
-    [lanes[i],lanes[j]] = [lanes[j],lanes[i]];
+    [lanes[i], lanes[j]] = [lanes[j], lanes[i]];
   }
 
-  const count = Math.random() < 0.65 ? 1 : 2; // maioria 1, às vezes 2
-  const chosen = lanes.slice(0, count);
+  const count = Math.random() < 0.7 ? 1 : 2; // maioria 1 pista
+  const selected = lanes.slice(0, count);
 
-  for(const lane of chosen){
+  for(const lane of selected){
     enemies.push({
       lane,
       x: laneCenter(lane),
-      y: -140,
+      y: -BLOCK_WINDOW,
       w: 52,
       h: 96
     });
@@ -128,7 +129,7 @@ function chooseSafeLane(){
 
   for(const e of enemies){
     const dy = player.y - e.y;
-    if(dy > 0 && dy < 260){
+    if(dy > 0 && dy < BLOCK_WINDOW){
       danger[e.lane] += 1 / dy;
     }
   }
@@ -169,7 +170,7 @@ function update(dt){
   elLane.textContent = targetLane;
   const targetX = laneCenter(targetLane);
 
-  /* movimento suave */
+  // movimento suave
   player.x += (targetX - player.x) * 6 * dt;
   player.lane = targetLane;
 
@@ -183,7 +184,7 @@ function update(dt){
   /* move inimigos */
   for(let i=enemies.length-1;i>=0;i--){
     enemies[i].y += SPEED * dt;
-    if(enemies[i].y > H + 300){
+    if(enemies[i].y > H + 400){
       enemies.splice(i,1);
     }
   }
