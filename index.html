@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Race Game – IA Autoplay</title>
+<title>Race Game – IA Stream Mode</title>
 
 <style>
 body{
   margin:0;
   background:#0b1020;
-  font-family:system-ui,Segoe UI,Roboto,Arial;
+  font-family:system-ui, Arial;
   display:flex;
   justify-content:center;
   align-items:center;
@@ -26,8 +26,14 @@ canvas{
 .hud{
   display:flex;
   justify-content:space-between;
-  margin-bottom:8px;
+  margin-bottom:6px;
   font-weight:600;
+}
+.note{
+  text-align:center;
+  font-size:12px;
+  opacity:0.7;
+  margin-top:4px;
 }
 </style>
 </head>
@@ -36,15 +42,14 @@ canvas{
 <div class="wrap">
   <div class="hud">
     <div>Pontos: <span id="score">0</span></div>
-    <div>Vel: <span id="speed">0</span></div>
-    <div>Ultrap.: <span id="passes">0</span></div>
+    <div>Faixa IA: <span id="lane">1</span></div>
   </div>
   <canvas id="game" width="480" height="800"></canvas>
+  <div class="note">Modo IA ativa • Sem controle humano</div>
 </div>
 
 <script>
 /* ========= CONFIG ========= */
-const AUTO_PLAY = true;
 const LANES = 3;
 
 /* ========= CANVAS ========= */
@@ -55,186 +60,152 @@ const H = canvas.height;
 
 /* ========= HUD ========= */
 const elScore = document.getElementById("score");
-const elSpeed = document.getElementById("speed");
-const elPasses = document.getElementById("passes");
-
-/* ========= UTIL ========= */
-const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-const lerp=(a,b,t)=>a+(b-a)*t;
+const elLane = document.getElementById("lane");
 
 /* ========= ROAD ========= */
-const road={
-  x:W/2,
-  width:W*0.65
+const road = {
+  x: W / 2,
+  width: W * 0.66
 };
 
 /* ========= PLAYER ========= */
-const player={
-  x:road.x,
-  y:H*0.78,
-  w:42,
-  h:76,
-  vx:0
+const player = {
+  lane: 1,
+  x: 0,
+  y: H * 0.8,
+  w: 44,
+  h: 78
 };
 
 /* ========= STATE ========= */
-const state={
-  t:0,
-  speed:520,
-  speedTarget:520,
-  difficulty:1,
-  score:0,
-  passes:0,
-  spawnTimer:0,
-  spawnEvery:0.9
-};
+let score = 0;
+let speed = 420;
+let spawnTimer = 0;
+let spawnEvery = 0.9;
 
-const enemies=[];
-const coins=[];
-
-/* ========= RNG ========= */
-function rand(){return Math.random();}
+/* ========= OBJECTS ========= */
+const enemies = [];
 
 /* ========= LANES ========= */
-function laneCenter(i){
-  const left=road.x-road.width/2;
-  const laneW=road.width/LANES;
-  return left+laneW*(i+0.5);
-}
-function laneIndex(x){
-  const left=road.x-road.width/2;
-  const laneW=road.width/LANES;
-  return clamp(Math.floor((x-left)/laneW),0,LANES-1);
+function laneCenter(lane){
+  const left = road.x - road.width / 2;
+  const laneW = road.width / LANES;
+  return left + laneW * (lane + 0.5);
 }
 
 /* ========= SPAWN ========= */
 function spawnEnemy(){
-  const lane=Math.floor(rand()*LANES);
+  const lane = Math.floor(Math.random() * LANES);
   enemies.push({
-    x:laneCenter(lane),
-    y:-100,
-    w:42,
-    h:74,
-    vy:state.speed*(0.55+rand()*0.25),
-    passed:false
+    lane,
+    x: laneCenter(lane),
+    y: -120,
+    w: 44,
+    h: 78
   });
 }
 
-/* ========= IA ========= */
-function aiDecision(){
-  const lookAhead=300;
-  const risk=[0,0,0];
+/* ========= IA (STREAM SAFE) ========= */
+/*
+  Regra simples e confiável:
+  - Conta quantos inimigos existem em cada faixa À FRENTE
+  - Escolhe sempre a faixa menos ocupada
+  - Sem aceleração, sem hesitação
+*/
+function chooseBestLane(){
+  const danger = new Array(LANES).fill(0);
 
   for(const e of enemies){
-    if(e.y<player.y && e.y>player.y-lookAhead){
-      const l=laneIndex(e.x);
-      const d=player.y-e.y;
-      risk[l]+=1/(d*d);
+    if(e.y < player.y){
+      danger[e.lane]++;
     }
   }
 
-  let bestLane=0;
-  let minRisk=risk[0];
-  for(let i=1;i<LANES;i++){
-    if(risk[i]<minRisk){
-      minRisk=risk[i];
-      bestLane=i;
+  let best = 0;
+  for(let i = 1; i < LANES; i++){
+    if(danger[i] < danger[best]){
+      best = i;
     }
   }
-
-  return laneCenter(bestLane);
+  return best;
 }
 
 /* ========= LOOP ========= */
-let last=performance.now();
+let last = performance.now();
 requestAnimationFrame(loop);
 
 function loop(now){
-  const dt=Math.min(0.033,(now-last)/1000);
-  last=now;
+  const dt = Math.min(0.033, (now - last) / 1000);
+  last = now;
+
   update(dt);
   draw();
+
   requestAnimationFrame(loop);
 }
 
 /* ========= UPDATE ========= */
 function update(dt){
-  state.t+=dt;
-  state.difficulty=1+state.t/18;
-  state.spawnEvery=clamp(0.9-(state.difficulty-1)*0.08,0.45,0.9);
+  score += dt * 100;
+  elScore.textContent = score | 0;
 
-  state.speedTarget=520+(state.difficulty-1)*120;
-  state.speed=lerp(state.speed,state.speedTarget,0.06);
+  /* --- IA decide faixa --- */
+  player.lane = chooseBestLane();
+  elLane.textContent = player.lane;
 
-  /* --- IA MOVE --- */
-  let targetX=player.x;
-  if(AUTO_PLAY){
-    targetX=aiDecision();
-  }
+  /* --- posição FORÇADA (stream-safe) --- */
+  player.x = laneCenter(player.lane);
 
-  const dx=targetX-player.x;
-  player.vx+=dx*6*dt;
-  player.vx*=0.85;
-  player.x+=player.vx*dt;
-
-  const minX=road.x-road.width/2+player.w/2;
-  const maxX=road.x+road.width/2-player.w/2;
-  player.x=clamp(player.x,minX,maxX);
-
-  /* --- SPAWN --- */
-  state.spawnTimer+=dt;
-  if(state.spawnTimer>state.spawnEvery){
-    state.spawnTimer=0;
+  /* --- spawn inimigos --- */
+  spawnTimer += dt;
+  if(spawnTimer > spawnEvery){
+    spawnTimer = 0;
     spawnEnemy();
   }
 
-  /* --- ENEMIES --- */
-  for(let i=enemies.length-1;i>=0;i--){
-    const e=enemies[i];
-    e.y+=e.vy*dt;
+  /* --- move inimigos --- */
+  for(let i = enemies.length - 1; i >= 0; i--){
+    enemies[i].y += speed * dt;
 
-    if(!e.passed && e.y>player.y){
-      e.passed=true;
-      state.passes++;
-      state.score+=120;
-    }
-
+    /* colisão (reset limpo para live) */
     if(
-      Math.abs(e.x-player.x)<(e.w+player.w)/2 &&
-      Math.abs(e.y-player.y)<(e.h+player.h)/2
+      enemies[i].lane === player.lane &&
+      Math.abs(enemies[i].y - player.y) < player.h / 2
     ){
-      // reinicia corretamente
-      enemies.length=0;
-      state.score=0;
-      state.passes=0;
+      enemies.length = 0;
+      score = 0;
       break;
     }
 
-    if(e.y>H+100) enemies.splice(i,1);
+    if(enemies[i].y > H + 120){
+      enemies.splice(i,1);
+    }
   }
-
-  state.score+=state.speed*dt*0.1;
-
-  elScore.textContent=state.score|0;
-  elSpeed.textContent=Math.round(state.speed/10);
-  elPasses.textContent=state.passes;
 }
 
 /* ========= DRAW ========= */
 function draw(){
   ctx.clearRect(0,0,W,H);
 
+  /* fundo */
   ctx.fillStyle="#1b2a62";
   ctx.fillRect(0,0,W,H);
 
+  /* pista */
   ctx.fillStyle="#0b0f1c";
-  ctx.fillRect(road.x-road.width/2,0,road.width,H);
+  ctx.fillRect(
+    road.x-road.width/2,
+    0,
+    road.width,
+    H
+  );
 
+  /* linhas */
+  ctx.strokeStyle="rgba(255,255,255,0.25)";
   ctx.setLineDash([24,18]);
-  ctx.strokeStyle="rgba(255,255,255,0.2)";
   ctx.lineWidth=4;
   for(let i=1;i<LANES;i++){
-    const x=road.x-road.width/2+(road.width/LANES)*i;
+    const x = laneCenter(i) - road.width / LANES / 2;
     ctx.beginPath();
     ctx.moveTo(x,0);
     ctx.lineTo(x,H);
@@ -242,13 +213,20 @@ function draw(){
   }
   ctx.setLineDash([]);
 
+  /* inimigos */
+  ctx.fillStyle="#ff5a7a";
   for(const e of enemies){
-    ctx.fillStyle="#ff5a7a";
-    ctx.fillRect(e.x-e.w/2,e.y-e.h/2,e.w,e.h);
+    ctx.fillRect(e.x-e.w/2, e.y-e.h/2, e.w, e.h);
   }
 
+  /* jogador */
   ctx.fillStyle="#4de3a5";
-  ctx.fillRect(player.x-player.w/2,player.y-player.h/2,player.w,player.h);
+  ctx.fillRect(
+    player.x-player.w/2,
+    player.y-player.h/2,
+    player.w,
+    player.h
+  );
 }
 </script>
 </body>
