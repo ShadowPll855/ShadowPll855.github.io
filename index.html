@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Race Game – Stream Safe</title>
+<title>Race Game – IA Stream Safe (3 Faixas)</title>
 
 <style>
 body{
@@ -42,17 +42,17 @@ canvas{
 <div class="wrap">
   <div class="hud">
     <div>Pontos: <span id="score">0</span></div>
-    <div>Lado IA: <span id="side">Direita</span></div>
+    <div>Faixa IA: <span id="lane">1</span></div>
   </div>
   <canvas id="game" width="480" height="800"></canvas>
-  <div class="note">Modo stream • IA infinita • dificuldade fixa</div>
+  <div class="note">3 faixas • spawn seguro • dificuldade fixa</div>
 </div>
 
 <script>
 /* ================= CONFIG ================= */
-const SIDES = ["left","right"]; // apenas 2 pontos de spawn
-const SPEED = 380;              // dificuldade fixa
-const SPAWN_INTERVAL = 1.05;    // ritmo fixo (desafio constante)
+const LANES = 3;
+const SPEED = 380;          // dificuldade fixa
+const SPAWN_INTERVAL = 1.1; // ritmo fixo
 
 /* ================= CANVAS ================= */
 const canvas = document.getElementById("game");
@@ -62,7 +62,7 @@ const H = canvas.height;
 
 /* ================= HUD ================= */
 const elScore = document.getElementById("score");
-const elSide  = document.getElementById("side");
+const elLane  = document.getElementById("lane");
 
 /* ================= ROAD ================= */
 const road = {
@@ -72,7 +72,7 @@ const road = {
 
 /* ================= PLAYER ================= */
 const player = {
-  side: "right",
+  lane: 1,
   x: 0,
   y: H * 0.8,
   w: 52,
@@ -82,49 +82,67 @@ const player = {
 /* ================= STATE ================= */
 let score = 0;
 let spawnTimer = 0;
-let lastSpawnSide = "left";
 
 /* ================= OBJECTS ================= */
 const enemies = [];
 
-/* ================= POSITIONS ================= */
-function sideX(side){
+/* ================= POSIÇÕES ================= */
+function laneCenter(lane){
   const left = road.x - road.width / 2;
-  const right = road.x + road.width / 2;
-  const offset = road.width * 0.22;
-  return side === "left"
-    ? left + offset
-    : right - offset;
+  const laneW = road.width / LANES;
+  return left + laneW * (lane + 0.5);
 }
 
-/* ================= SPAWN (CONTROLADO) ================= */
-function spawnEnemy(){
-  // alterna o lado para nunca fechar saída
-  const side = lastSpawnSide === "left" ? "right" : "left";
-  lastSpawnSide = side;
+/* ================= SPAWN INTELIGENTE ================= */
+/*
+  Gera uma "onda" de spawn:
+  - 1 ou 2 faixas aleatórias
+  - NUNCA 3
+*/
+function spawnWave(){
+  const lanes = [0,1,2];
 
-  enemies.push({
-    side,
-    x: sideX(side),
-    y: -140,
-    w: 52,
-    h: 96
-  });
+  // embaralha
+  for(let i=lanes.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [lanes[i],lanes[j]] = [lanes[j],lanes[i]];
+  }
+
+  const count = Math.random() < 0.65 ? 1 : 2; // maioria 1, às vezes 2
+  const chosen = lanes.slice(0, count);
+
+  for(const lane of chosen){
+    enemies.push({
+      lane,
+      x: laneCenter(lane),
+      y: -140,
+      w: 52,
+      h: 96
+    });
+  }
 }
 
-/* ================= IA (DETERMINÍSTICA) ================= */
-function chooseSafeSide(){
-  // verifica se há obstáculo à frente no lado atual
+/* ================= IA ================= */
+function chooseSafeLane(){
+  const danger = new Array(LANES).fill(0);
+
   for(const e of enemies){
-    if(
-      e.side === player.side &&
-      e.y < player.y &&
-      player.y - e.y < 260
-    ){
-      return player.side === "left" ? "right" : "left";
+    const dy = player.y - e.y;
+    if(dy > 0 && dy < 260){
+      danger[e.lane] += 1 / dy;
     }
   }
-  return player.side;
+
+  let best = player.lane;
+  let min = danger[player.lane];
+
+  for(let i=0;i<LANES;i++){
+    if(danger[i] < min){
+      min = danger[i];
+      best = i;
+    }
+  }
+  return best;
 }
 
 /* ================= LOOP ================= */
@@ -146,25 +164,25 @@ function update(dt){
   score += dt * 100;
   elScore.textContent = Math.floor(score);
 
-  /* IA escolhe lado */
-  player.side = chooseSafeSide();
-  elSide.textContent = player.side === "left" ? "Esquerda" : "Direita";
+  /* IA */
+  const targetLane = chooseSafeLane();
+  elLane.textContent = targetLane;
+  const targetX = laneCenter(targetLane);
 
-  /* movimento suave (sem teleporte) */
-  const targetX = sideX(player.side);
+  /* movimento suave */
   player.x += (targetX - player.x) * 6 * dt;
+  player.lane = targetLane;
 
-  /* spawn fixo */
+  /* spawn */
   spawnTimer += dt;
   if(spawnTimer >= SPAWN_INTERVAL){
     spawnTimer = 0;
-    spawnEnemy();
+    spawnWave();
   }
 
   /* move inimigos */
   for(let i=enemies.length-1;i>=0;i--){
     enemies[i].y += SPEED * dt;
-
     if(enemies[i].y > H + 300){
       enemies.splice(i,1);
     }
@@ -181,13 +199,16 @@ function draw(){
   ctx.fillStyle="#0b0f1c";
   ctx.fillRect(road.x-road.width/2,0,road.width,H);
 
-  ctx.strokeStyle="rgba(255,255,255,0.2)";
+  ctx.strokeStyle="rgba(255,255,255,0.25)";
   ctx.setLineDash([24,18]);
   ctx.lineWidth=4;
-  ctx.beginPath();
-  ctx.moveTo(road.x,0);
-  ctx.lineTo(road.x,H);
-  ctx.stroke();
+  for(let i=1;i<LANES;i++){
+    const x = laneCenter(i) - road.width / LANES / 2;
+    ctx.beginPath();
+    ctx.moveTo(x,0);
+    ctx.lineTo(x,H);
+    ctx.stroke();
+  }
   ctx.setLineDash([]);
 
   /* inimigos */
