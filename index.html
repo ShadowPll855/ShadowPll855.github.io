@@ -1,35 +1,35 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Race Game – Autoplay</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Race Game – IA Autoplay</title>
 
-  <style>
-    body{
-      margin:0;
-      background:#0b1020;
-      color:#e8eeff;
-      font-family:system-ui,Segoe UI,Roboto,Arial;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      min-height:100vh;
-    }
-    .wrap{width:520px}
-    canvas{
-      width:100%;
-      background:#111a33;
-      border-radius:12px;
-      display:block;
-    }
-    .hud{
-      display:flex;
-      justify-content:space-between;
-      margin-bottom:8px;
-      font-weight:600;
-    }
-  </style>
+<style>
+body{
+  margin:0;
+  background:#0b1020;
+  font-family:system-ui,Segoe UI,Roboto,Arial;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+  color:#e8eeff;
+}
+.wrap{width:520px}
+canvas{
+  width:100%;
+  background:#111a33;
+  border-radius:14px;
+  display:block;
+}
+.hud{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:8px;
+  font-weight:600;
+}
+</style>
 </head>
 
 <body>
@@ -43,42 +43,42 @@
 </div>
 
 <script>
-/* ================= CONFIG ================= */
-const AUTO_PLAY = true;   // <<< IA LIGADA
+/* ========= CONFIG ========= */
+const AUTO_PLAY = true;
 const LANES = 3;
 
-/* ================= CANVAS ================= */
+/* ========= CANVAS ========= */
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 const W = canvas.width;
 const H = canvas.height;
 
-/* ================= HUD ================= */
+/* ========= HUD ========= */
 const elScore = document.getElementById("score");
 const elSpeed = document.getElementById("speed");
 const elPasses = document.getElementById("passes");
 
-/* ================= UTIL ================= */
-const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
-const lerp = (a,b,t)=>a+(b-a)*t;
+/* ========= UTIL ========= */
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const lerp=(a,b,t)=>a+(b-a)*t;
 
-/* ================= ROAD ================= */
-const road = {
-  x: W/2,
-  width: W*0.65
+/* ========= ROAD ========= */
+const road={
+  x:W/2,
+  width:W*0.65
 };
 
-/* ================= PLAYER ================= */
-const player = {
-  x: road.x,
-  y: H*0.78,
-  w: 42,
-  h: 76,
-  vx: 0
+/* ========= PLAYER ========= */
+const player={
+  x:road.x,
+  y:H*0.78,
+  w:42,
+  h:76,
+  vx:0
 };
 
-/* ================= STATE ================= */
-const state = {
+/* ========= STATE ========= */
+const state={
   t:0,
   speed:520,
   speedTarget:520,
@@ -86,86 +86,69 @@ const state = {
   score:0,
   passes:0,
   spawnTimer:0,
-  spawnEvery:0.9,
-  rng:Math.random()*1e9|0
+  spawnEvery:0.9
 };
 
-/* ================= OBJECTS ================= */
 const enemies=[];
 const coins=[];
 
-/* ================= RNG ================= */
-function rand(){
-  state.rng = (1664525*state.rng + 1013904223)>>>0;
-  return state.rng/4294967296;
-}
+/* ========= RNG ========= */
+function rand(){return Math.random();}
 
-/* ================= LANES ================= */
+/* ========= LANES ========= */
 function laneCenter(i){
-  const left = road.x-road.width/2;
-  const laneW = road.width/LANES;
+  const left=road.x-road.width/2;
+  const laneW=road.width/LANES;
   return left+laneW*(i+0.5);
 }
 function laneIndex(x){
-  const left = road.x-road.width/2;
-  const laneW = road.width/LANES;
+  const left=road.x-road.width/2;
+  const laneW=road.width/LANES;
   return clamp(Math.floor((x-left)/laneW),0,LANES-1);
 }
 
-/* ================= SPAWN ================= */
+/* ========= SPAWN ========= */
 function spawnEnemy(){
-  const lane = Math.floor(rand()*LANES);
+  const lane=Math.floor(rand()*LANES);
   enemies.push({
-    x: laneCenter(lane),
-    y: -100,
+    x:laneCenter(lane),
+    y:-100,
     w:42,
     h:74,
-    vy: state.speed*(0.6+rand()*0.25),
+    vy:state.speed*(0.55+rand()*0.25),
     passed:false
   });
-  if(rand()<0.3){
-    coins.push({
-      x: laneCenter(lane)+(rand()-0.5)*30,
-      y:-160,
-      r:10,
-      vy:state.speed*0.55,
-      taken:false
-    });
-  }
 }
 
-/* ================= AUTOPLAY IA ================= */
+/* ========= IA ========= */
 function aiDecision(){
-  const look = 260;
-  const danger=[0,0,0];
-  const bonus=[0,0,0];
+  const lookAhead=300;
+  const risk=[0,0,0];
 
   for(const e of enemies){
-    if(e.y<player.y && e.y>player.y-look){
+    if(e.y<player.y && e.y>player.y-lookAhead){
       const l=laneIndex(e.x);
-      danger[l]+=1/(player.y-e.y);
+      const d=player.y-e.y;
+      risk[l]+=1/(d*d);
     }
   }
-  for(const c of coins){
-    if(!c.taken && c.y<player.y && c.y>player.y-look){
-      bonus[laneIndex(c.x)] += 0.3;
-    }
-  }
-  let bestLane=laneIndex(player.x);
-  let bestScore=danger[bestLane]-bonus[bestLane];
 
-  for(let i=0;i<LANES;i++){
-    const s=danger[i]-bonus[i];
-    if(s<bestScore){bestScore=s;bestLane=i;}
+  let bestLane=0;
+  let minRisk=risk[0];
+  for(let i=1;i<LANES;i++){
+    if(risk[i]<minRisk){
+      minRisk=risk[i];
+      bestLane=i;
+    }
   }
-  return {
-    targetX: laneCenter(bestLane),
-    boost: bestScore<0.4
-  };
+
+  return laneCenter(bestLane);
 }
 
-/* ================= LOOP ================= */
+/* ========= LOOP ========= */
 let last=performance.now();
+requestAnimationFrame(loop);
+
 function loop(now){
   const dt=Math.min(0.033,(now-last)/1000);
   last=now;
@@ -173,64 +156,61 @@ function loop(now){
   draw();
   requestAnimationFrame(loop);
 }
-requestAnimationFrame(loop);
 
-/* ================= UPDATE ================= */
+/* ========= UPDATE ========= */
 function update(dt){
   state.t+=dt;
-  state.difficulty=1+state.t/20;
-  state.spawnEvery=clamp(0.9-(state.difficulty-1)*0.08,0.4,0.9);
+  state.difficulty=1+state.t/18;
+  state.spawnEvery=clamp(0.9-(state.difficulty-1)*0.08,0.45,0.9);
+
   state.speedTarget=520+(state.difficulty-1)*120;
-  state.speed=lerp(state.speed,state.speedTarget,0.05);
+  state.speed=lerp(state.speed,state.speedTarget,0.06);
 
-  let dir=0;
-  let boost=false;
-
+  /* --- IA MOVE --- */
+  let targetX=player.x;
   if(AUTO_PLAY){
-    const ai=aiDecision();
-    const dx=ai.targetX-player.x;
-    if(Math.abs(dx)>6) dir=dx>0?1:-1;
-    boost=ai.boost;
+    targetX=aiDecision();
   }
 
-  player.vx+=dir*2100*dt;
-  player.vx*=0.86;
+  const dx=targetX-player.x;
+  player.vx+=dx*6*dt;
+  player.vx*=0.85;
   player.x+=player.vx*dt;
 
   const minX=road.x-road.width/2+player.w/2;
   const maxX=road.x+road.width/2-player.w/2;
   player.x=clamp(player.x,minX,maxX);
 
+  /* --- SPAWN --- */
   state.spawnTimer+=dt;
   if(state.spawnTimer>state.spawnEvery){
     state.spawnTimer=0;
     spawnEnemy();
   }
 
-  for(const e of enemies){
+  /* --- ENEMIES --- */
+  for(let i=enemies.length-1;i>=0;i--){
+    const e=enemies[i];
     e.y+=e.vy*dt;
+
     if(!e.passed && e.y>player.y){
       e.passed=true;
       state.passes++;
       state.score+=120;
     }
-    if(Math.abs(e.x-player.x)<(e.w+player.w)/2 &&
-       Math.abs(e.y-player.y)<(e.h+player.h)/2){
-      enemies.length=0;
-      coins.length=0;
-    }
-  }
 
-  for(const c of coins){
-    c.y+=c.vy*dt;
-    if(!c.taken){
-      const dx=c.x-player.x;
-      const dy=c.y-player.y;
-      if(dx*dx+dy*dy<(c.r+18)**2){
-        c.taken=true;
-        state.score+=250;
-      }
+    if(
+      Math.abs(e.x-player.x)<(e.w+player.w)/2 &&
+      Math.abs(e.y-player.y)<(e.h+player.h)/2
+    ){
+      // reinicia corretamente
+      enemies.length=0;
+      state.score=0;
+      state.passes=0;
+      break;
     }
+
+    if(e.y>H+100) enemies.splice(i,1);
   }
 
   state.score+=state.speed*dt*0.1;
@@ -240,7 +220,7 @@ function update(dt){
   elPasses.textContent=state.passes;
 }
 
-/* ================= DRAW ================= */
+/* ========= DRAW ========= */
 function draw(){
   ctx.clearRect(0,0,W,H);
 
@@ -261,15 +241,6 @@ function draw(){
     ctx.stroke();
   }
   ctx.setLineDash([]);
-
-  for(const c of coins){
-    if(!c.taken){
-      ctx.fillStyle="#ffd666";
-      ctx.beginPath();
-      ctx.arc(c.x,c.y,c.r,0,Math.PI*2);
-      ctx.fill();
-    }
-  }
 
   for(const e of enemies){
     ctx.fillStyle="#ff5a7a";
