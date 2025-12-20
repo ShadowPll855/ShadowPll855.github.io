@@ -3,57 +3,67 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Race Game – 3 Pistas (Stream Safe)</title>
-
+<title>Race Game – 3 Pistas (Spawn Seguro)</title>
 <style>
-body{
-  margin:0;
-  background:#0b1020;
-  font-family:system-ui, Arial;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  min-height:100vh;
-  color:#e8eeff;
-}
-.wrap{width:520px}
-canvas{
-  width:100%;
-  background:#111a33;
-  border-radius:14px;
-  display:block;
-}
-.hud{
-  display:flex;
-  justify-content:space-between;
-  margin-bottom:6px;
-  font-weight:600;
-}
-.note{
-  text-align:center;
-  font-size:12px;
-  opacity:0.7;
-  margin-top:4px;
-}
+  body{
+    margin:0;
+    background:#0b1020;
+    font-family:system-ui, Arial;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+    color:#e8eeff;
+  }
+  .wrap{width:560px}
+  canvas{
+    width:100%;
+    background:#111a33;
+    border-radius:14px;
+    display:block;
+  }
+  .hud{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:6px;
+    font-weight:650;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .note{
+    text-align:center;
+    font-size:12px;
+    opacity:0.75;
+    margin-top:6px;
+  }
+  .pill{
+    padding:2px 8px;
+    border:1px solid rgba(255,255,255,0.18);
+    border-radius:999px;
+    background:rgba(0,0,0,0.18);
+  }
 </style>
 </head>
-
 <body>
 <div class="wrap">
   <div class="hud">
-    <div>Pontos: <span id="score">0</span></div>
-    <div>Pista IA: <span id="lane">1</span></div>
+    <div class="pill">Pontos: <span id="score">0</span></div>
+    <div class="pill">Pista IA: <span id="lane">1</span></div>
+    <div class="pill">Última onda: <span id="wave">—</span></div>
   </div>
+
   <canvas id="game" width="480" height="800"></canvas>
-  <div class="note">3 pistas • spawn controlado • infinito real</div>
+  <div class="note">3 pistas reais (0/1/2) • Spawn aleatório validado • Dificuldade fixa</div>
 </div>
 
 <script>
 /* ================= CONFIG ================= */
 const LANES = 3;
-const SPEED = 360;             // dificuldade fixa
-const SPAWN_INTERVAL = 1.1;    // ritmo fixo
-const BLOCK_WINDOW = 240;      // altura mínima entre ondas
+
+// Dificuldade fixa (para você subir depois com presentes)
+const SPEED = 380;           // px/s
+const SPAWN_INTERVAL = 1.05; // s entre ondas (fixo)
+const WINDOW_Y = 260;        // janela onde consideramos “trancar” (fixo)
 
 /* ================= CANVAS ================= */
 const canvas = document.getElementById("game");
@@ -64,18 +74,19 @@ const H = canvas.height;
 /* ================= HUD ================= */
 const elScore = document.getElementById("score");
 const elLane  = document.getElementById("lane");
+const elWave  = document.getElementById("wave");
 
 /* ================= ROAD ================= */
 const road = {
-  x: W / 2,
-  width: W * 0.66
+  x: W/2,
+  width: W*0.70
 };
 
 /* ================= PLAYER ================= */
 const player = {
-  lane: 1,
+  lane: 1,          // 0,1,2
   x: 0,
-  y: H * 0.8,
+  y: H*0.80,
   w: 52,
   h: 96
 };
@@ -87,59 +98,109 @@ let spawnTimer = 0;
 /* ================= OBJECTS ================= */
 const enemies = [];
 
-/* ================= POSIÇÕES ================= */
+/* ================= LANES ================= */
 function laneCenter(lane){
-  const left = road.x - road.width / 2;
+  const left = road.x - road.width/2;
   const laneW = road.width / LANES;
-  return left + laneW * (lane + 0.5);
+  return left + laneW*(lane + 0.5);
 }
 
-/* ================= SPAWN VALIDADO ================= */
-/*
-  Cria uma "onda" de spawn:
-  - escolhe 1 ou 2 pistas aleatórias
-  - valida para nunca ocupar as 3
+/* ================= SPAWN ALEATÓRIO VALIDADO =================
+   Regras:
+   - Cada “onda” spawna em 1 ou 2 pistas, escolhido aleatoriamente.
+   - NUNCA spawna nas 3 pistas na mesma onda.
+   - Além disso, evita criar uma situação de “3 pistas ocupadas” DENTRO DA JANELA.
 */
-function spawnWave(){
-  const lanes = [0,1,2];
+function lanesBlockedInWindow(){
+  // Quais pistas têm inimigo “perigoso” dentro da janela à frente do player?
+  const blocked = new Array(LANES).fill(false);
+  for (const e of enemies){
+    const dy = player.y - e.y;
+    if (dy > 0 && dy < WINDOW_Y){
+      blocked[e.lane] = true;
+    }
+  }
+  return blocked;
+}
 
-  // embaralha pistas
-  for(let i=lanes.length-1;i>0;i--){
+function pickWaveLanes(){
+  // Decide se a onda terá 1 ou 2 inimigos (aleatório, com viés para 1)
+  const count = (Math.random() < 0.65) ? 1 : 2;
+
+  // Pistas embaralhadas
+  const lanes = [0,1,2];
+  for (let i=lanes.length-1;i>0;i--){
     const j = Math.floor(Math.random()*(i+1));
     [lanes[i], lanes[j]] = [lanes[j], lanes[i]];
   }
 
-  const count = Math.random() < 0.7 ? 1 : 2; // maioria 1 pista
-  const selected = lanes.slice(0, count);
+  // Seleção inicial
+  let selected = lanes.slice(0, count);
 
-  for(const lane of selected){
+  // Validação anti-tranca: se somando com o que já está na janela fecharia as 3,
+  // ajusta a seleção para garantir ao menos 1 pista livre.
+  const blocked = lanesBlockedInWindow();
+  const willBlock = blocked.slice();
+  for (const ln of selected) willBlock[ln] = true;
+
+  const allBlocked = willBlock.every(v => v === true);
+  if (allBlocked){
+    // Força a onda a NÃO usar a única pista que estava livre (se houver),
+    // ou reduz para 1 inimigo numa pista que não complete o bloqueio.
+    // Aqui: tenta achar uma pista que, ao spawnar, ainda deixe alguém livre.
+    const candidates = [];
+    for (let ln=0; ln<LANES; ln++){
+      // simula spawnar só nessa pista
+      const sim = blocked.slice();
+      sim[ln] = true;
+      if (!sim.every(v => v === true)) candidates.push(ln);
+    }
+    if (candidates.length > 0){
+      selected = [ candidates[Math.floor(Math.random()*candidates.length)] ];
+    } else {
+      // caso extremo: reduz para 1 e escolhe aleatório (na prática, muito raro com esses parâmetros)
+      selected = [ lanes[Math.floor(Math.random()*lanes.length)] ];
+    }
+  }
+
+  // Garante unicidade se count=2 (por segurança)
+  selected = [...new Set(selected)];
+  return selected;
+}
+
+function spawnWave(){
+  const lanesToSpawn = pickWaveLanes();
+  elWave.textContent = lanesToSpawn.join(",");
+
+  for (const lane of lanesToSpawn){
     enemies.push({
       lane,
       x: laneCenter(lane),
-      y: -BLOCK_WINDOW,
+      y: -140,
       w: 52,
       h: 96
     });
   }
 }
 
-/* ================= IA ================= */
+/* ================= IA =================
+   Escolhe a pista menos perigosa dentro da janela. */
 function chooseSafeLane(){
   const danger = new Array(LANES).fill(0);
 
-  for(const e of enemies){
+  for (const e of enemies){
     const dy = player.y - e.y;
-    if(dy > 0 && dy < BLOCK_WINDOW){
-      danger[e.lane] += 1 / dy;
+    if (dy > 0 && dy < WINDOW_Y){
+      // peso por proximidade (quanto mais perto, mais perigoso)
+      danger[e.lane] += 1 / Math.max(40, dy);
     }
   }
 
-  let best = player.lane;
-  let min = danger[player.lane];
-
-  for(let i=0;i<LANES;i++){
-    if(danger[i] < min){
-      min = danger[i];
+  let best = 0;
+  let bestVal = danger[0];
+  for (let i=1;i<LANES;i++){
+    if (danger[i] < bestVal){
+      bestVal = danger[i];
       best = i;
     }
   }
@@ -165,26 +226,25 @@ function update(dt){
   score += dt * 100;
   elScore.textContent = Math.floor(score);
 
-  /* IA */
+  // IA decide e move (suave)
   const targetLane = chooseSafeLane();
   elLane.textContent = targetLane;
-  const targetX = laneCenter(targetLane);
 
-  // movimento suave
-  player.x += (targetX - player.x) * 6 * dt;
+  const targetX = laneCenter(targetLane);
+  player.x += (targetX - player.x) * 7 * dt;
   player.lane = targetLane;
 
-  /* spawn */
+  // Spawn em ondas (fixo)
   spawnTimer += dt;
-  if(spawnTimer >= SPAWN_INTERVAL){
+  if (spawnTimer >= SPAWN_INTERVAL){
     spawnTimer = 0;
     spawnWave();
   }
 
-  /* move inimigos */
-  for(let i=enemies.length-1;i>=0;i--){
+  // Move inimigos
+  for (let i=enemies.length-1;i>=0;i--){
     enemies[i].y += SPEED * dt;
-    if(enemies[i].y > H + 400){
+    if (enemies[i].y > H + 300){
       enemies.splice(i,1);
     }
   }
@@ -194,17 +254,20 @@ function update(dt){
 function draw(){
   ctx.clearRect(0,0,W,H);
 
-  ctx.fillStyle="#1b2a62";
+  // Fundo
+  ctx.fillStyle = "#1b2a62";
   ctx.fillRect(0,0,W,H);
 
-  ctx.fillStyle="#0b0f1c";
-  ctx.fillRect(road.x-road.width/2,0,road.width,H);
+  // Pista
+  ctx.fillStyle = "#0b0f1c";
+  ctx.fillRect(road.x-road.width/2, 0, road.width, H);
 
-  ctx.strokeStyle="rgba(255,255,255,0.25)";
-  ctx.setLineDash([24,18]);
-  ctx.lineWidth=4;
-  for(let i=1;i<LANES;i++){
-    const x = laneCenter(i) - road.width / LANES / 2;
+  // Linhas (3 pistas => 2 linhas internas)
+  ctx.strokeStyle = "rgba(255,255,255,0.25)";
+  ctx.setLineDash([26,18]);
+  ctx.lineWidth = 4;
+  for (let i=1;i<LANES;i++){
+    const x = (road.x-road.width/2) + (road.width/LANES)*i;
     ctx.beginPath();
     ctx.moveTo(x,0);
     ctx.lineTo(x,H);
@@ -212,21 +275,19 @@ function draw(){
   }
   ctx.setLineDash([]);
 
-  /* inimigos */
-  ctx.fillStyle="#ff5a7a";
-  for(const e of enemies){
-    ctx.fillRect(e.x-e.w/2,e.y-e.h/2,e.w,e.h);
+  // Inimigos (retângulos por enquanto; depois você troca por imagens)
+  ctx.fillStyle = "#ff5a7a";
+  for (const e of enemies){
+    ctx.fillRect(e.x - e.w/2, e.y - e.h/2, e.w, e.h);
   }
 
-  /* jogador */
-  ctx.fillStyle="#4de3a5";
-  ctx.fillRect(
-    player.x-player.w/2,
-    player.y-player.h/2,
-    player.w,
-    player.h
-  );
+  // Player
+  ctx.fillStyle = "#4de3a5";
+  ctx.fillRect(player.x - player.w/2, player.y - player.h/2, player.w, player.h);
 }
+
+// inicializa player no centro
+player.x = laneCenter(player.lane);
 </script>
 </body>
 </html>
