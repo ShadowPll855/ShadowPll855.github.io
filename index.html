@@ -2,705 +2,283 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Race Game — HTML (GitHub Pages)</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Race Game – Autoplay</title>
+
   <style>
-    :root{
-      --bg:#0b1020;
-      --panel:#111a33;
-      --text:#e8eeff;
-      --muted:#9fb0ff;
-      --accent:#6aa6ff;
-      --danger:#ff5a7a;
-      --ok:#4de3a5;
-    }
-    *{box-sizing:border-box}
     body{
       margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-      background: radial-gradient(1200px 900px at 50% -20%, #1b2a62 0%, var(--bg) 60%);
-      color:var(--text);
-      min-height:100vh;
+      background:#0b1020;
+      color:#e8eeff;
+      font-family:system-ui,Segoe UI,Roboto,Arial;
       display:flex;
-      align-items:center;
       justify-content:center;
-      padding:16px;
+      align-items:center;
+      min-height:100vh;
     }
-    .wrap{
-      width:min(920px, 100%);
-      display:grid;
-      grid-template-columns: 1fr;
-      gap:12px;
-    }
-    .topbar{
-      display:flex;
-      gap:12px;
-      align-items:stretch;
-      justify-content:space-between;
-      flex-wrap:wrap;
-    }
-    .card{
-      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
-      border: 1px solid rgba(255,255,255,0.10);
-      border-radius: 16px;
-      padding: 12px 14px;
-      box-shadow: 0 18px 40px rgba(0,0,0,0.35);
-      backdrop-filter: blur(6px);
+    .wrap{width:520px}
+    canvas{
+      width:100%;
+      background:#111a33;
+      border-radius:12px;
+      display:block;
     }
     .hud{
       display:flex;
-      gap:14px;
-      align-items:center;
-      flex-wrap:wrap;
-    }
-    .hud .stat{
-      display:flex;
-      flex-direction:column;
-      gap:2px;
-      min-width: 120px;
-    }
-    .label{font-size:12px;color:var(--muted)}
-    .value{font-size:18px;font-weight:700;letter-spacing:0.3px}
-    .kbd{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      padding: 2px 8px;
-      border-radius: 10px;
-      border: 1px solid rgba(255,255,255,0.18);
-      background: rgba(0,0,0,0.18);
-      color: var(--text);
-      font-weight: 650;
-      font-size: 12px;
-      margin-right: 6px;
-    }
-    .actions{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      flex-wrap:wrap;
-    }
-    button{
-      appearance:none;
-      border: 1px solid rgba(255,255,255,0.18);
-      background: rgba(0,0,0,0.18);
-      color: var(--text);
-      padding: 10px 12px;
-      border-radius: 14px;
-      cursor:pointer;
-      font-weight:700;
-      letter-spacing:0.2px;
-      transition: transform .05s ease, background .2s ease, border-color .2s ease;
-      user-select:none;
-      touch-action: manipulation;
-    }
-    button:hover{ background: rgba(0,0,0,0.28); border-color: rgba(255,255,255,0.28); }
-    button:active{ transform: translateY(1px) scale(0.99); }
-    .primary{
-      background: rgba(106,166,255,0.18);
-      border-color: rgba(106,166,255,0.40);
-    }
-    .primary:hover{ background: rgba(106,166,255,0.26); }
-    .danger{
-      background: rgba(255,90,122,0.16);
-      border-color: rgba(255,90,122,0.40);
-    }
-    .canvasCard{
-      padding: 12px;
-    }
-    canvas{
-      width: 100%;
-      height: auto;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,0.10);
-      background: linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.40));
-      display:block;
-    }
-    .hint{
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.4;
-    }
-    .row{
-      display:flex;
       justify-content:space-between;
-      gap:12px;
-      flex-wrap:wrap;
-      align-items:center;
-    }
-
-    /* Mobile touch controls */
-    .touch{
-      display:none;
-      gap:10px;
-      justify-content:space-between;
-      margin-top:10px;
-    }
-    .touch button{
-      flex:1;
-      padding: 14px 12px;
-      font-size: 16px;
-      border-radius: 16px;
-    }
-    @media (pointer: coarse){
-      .touch{ display:flex; }
+      margin-bottom:8px;
+      font-weight:600;
     }
   </style>
 </head>
+
 <body>
-  <div class="wrap">
-    <div class="topbar">
-      <div class="card hud" aria-label="HUD">
-        <div class="stat">
-          <div class="label">Pontuação</div>
-          <div class="value" id="score">0</div>
-        </div>
-        <div class="stat">
-          <div class="label">Velocidade</div>
-          <div class="value"><span id="speed">0</span> km/h</div>
-        </div>
-        <div class="stat">
-          <div class="label">Ultrapassagens</div>
-          <div class="value" id="passes">0</div>
-        </div>
-        <div class="stat">
-          <div class="label">Recorde (local)</div>
-          <div class="value" id="best">0</div>
-        </div>
-      </div>
-
-      <div class="card actions" aria-label="Ações">
-        <button class="primary" id="btnStart">Iniciar</button>
-        <button id="btnPause">Pausar (P)</button>
-        <button class="danger" id="btnRestart">Reiniciar (R)</button>
-      </div>
-    </div>
-
-    <div class="card canvasCard">
-      <!-- Canvas interno 480x800 (escala via CSS) -->
-      <canvas id="game" width="480" height="800" aria-label="Race Game Canvas"></canvas>
-
-      <div class="touch" aria-label="Controles de toque">
-        <button id="touchLeft">⟵ Esquerda</button>
-        <button id="touchRight">Direita ⟶</button>
-      </div>
-
-      <div class="row" style="margin-top:10px;">
-        <div class="hint">
-          <span class="kbd">←</span><span class="kbd">→</span> ou <span class="kbd">A</span><span class="kbd">D</span> para mover.
-          <span class="kbd">↑</span> ou <span class="kbd">W</span> para boost.
-          <span class="kbd">P</span> pausa. <span class="kbd">R</span> reinicia.
-        </div>
-        <div class="hint" id="status">Pronto.</div>
-      </div>
-    </div>
+<div class="wrap">
+  <div class="hud">
+    <div>Pontos: <span id="score">0</span></div>
+    <div>Vel: <span id="speed">0</span></div>
+    <div>Ultrap.: <span id="passes">0</span></div>
   </div>
+  <canvas id="game" width="480" height="800"></canvas>
+</div>
 
 <script>
-(() => {
-  // ====== Util ======
-  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
-  const lerp = (a, b, t) => a + (b - a) * t;
+/* ================= CONFIG ================= */
+const AUTO_PLAY = true;   // <<< IA LIGADA
+const LANES = 3;
 
-  // ====== DOM ======
-  const canvas = document.getElementById("game");
-  const ctx = canvas.getContext("2d");
+/* ================= CANVAS ================= */
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+const W = canvas.width;
+const H = canvas.height;
 
-  const elScore = document.getElementById("score");
-  const elSpeed = document.getElementById("speed");
-  const elPasses = document.getElementById("passes");
-  const elBest  = document.getElementById("best");
-  const elStatus = document.getElementById("status");
+/* ================= HUD ================= */
+const elScore = document.getElementById("score");
+const elSpeed = document.getElementById("speed");
+const elPasses = document.getElementById("passes");
 
-  const btnStart = document.getElementById("btnStart");
-  const btnPause = document.getElementById("btnPause");
-  const btnRestart = document.getElementById("btnRestart");
+/* ================= UTIL ================= */
+const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
+const lerp = (a,b,t)=>a+(b-a)*t;
 
-  const touchLeft = document.getElementById("touchLeft");
-  const touchRight = document.getElementById("touchRight");
+/* ================= ROAD ================= */
+const road = {
+  x: W/2,
+  width: W*0.65
+};
 
-  // ====== Persistência ======
-  const BEST_KEY = "racegame_best_v1";
-  let bestScore = Number(localStorage.getItem(BEST_KEY) || 0);
-  elBest.textContent = bestScore.toLocaleString("pt-BR");
+/* ================= PLAYER ================= */
+const player = {
+  x: road.x,
+  y: H*0.78,
+  w: 42,
+  h: 76,
+  vx: 0
+};
 
-  // ====== Estado do jogo ======
-  const W = canvas.width, H = canvas.height;
+/* ================= STATE ================= */
+const state = {
+  t:0,
+  speed:520,
+  speedTarget:520,
+  difficulty:1,
+  score:0,
+  passes:0,
+  spawnTimer:0,
+  spawnEvery:0.9,
+  rng:Math.random()*1e9|0
+};
 
-  const road = {
-    x: W * 0.5,
-    width: W * 0.62,
-    shoulder: W * 0.10,
-  };
+/* ================= OBJECTS ================= */
+const enemies=[];
+const coins=[];
 
-  const player = {
-    x: road.x,
-    y: H * 0.78,
-    w: 44,
-    h: 78,
-    vx: 0,
-  };
+/* ================= RNG ================= */
+function rand(){
+  state.rng = (1664525*state.rng + 1013904223)>>>0;
+  return state.rng/4294967296;
+}
 
-  const state = {
-    running: false,
-    paused: false,
-    over: false,
-    t: 0,
-    score: 0,
-    passes: 0,
-    // velocidade do "mundo" (px/s)
-    speed: 520,
-    speedTarget: 520,
-    difficulty: 1,
-    spawnTimer: 0,
-    spawnEvery: 0.95,
-    rngSeed: (Math.random() * 1e9) | 0,
-  };
+/* ================= LANES ================= */
+function laneCenter(i){
+  const left = road.x-road.width/2;
+  const laneW = road.width/LANES;
+  return left+laneW*(i+0.5);
+}
+function laneIndex(x){
+  const left = road.x-road.width/2;
+  const laneW = road.width/LANES;
+  return clamp(Math.floor((x-left)/laneW),0,LANES-1);
+}
 
-  // Obstáculos (carros) e coletáveis
-  const enemies = [];
-  const coins = [];
-
-  // ====== Input ======
-  const keys = new Set();
-  window.addEventListener("keydown", (e) => {
-    const k = e.key.toLowerCase();
-    keys.add(k);
-
-    if (k === "p") togglePause();
-    if (k === "r") restart();
-    if (k === " " && !state.running) start();
+/* ================= SPAWN ================= */
+function spawnEnemy(){
+  const lane = Math.floor(rand()*LANES);
+  enemies.push({
+    x: laneCenter(lane),
+    y: -100,
+    w:42,
+    h:74,
+    vy: state.speed*(0.6+rand()*0.25),
+    passed:false
   });
-  window.addEventListener("keyup", (e) => keys.delete(e.key.toLowerCase()));
-
-  // Touch: manter pressionado
-  let touchDir = 0; // -1 esquerda, +1 direita
-  const bindHold = (el, dir) => {
-    const down = (e) => { e.preventDefault(); touchDir = dir; };
-    const up   = (e) => { e.preventDefault(); if (touchDir === dir) touchDir = 0; };
-    el.addEventListener("pointerdown", down);
-    el.addEventListener("pointerup", up);
-    el.addEventListener("pointercancel", up);
-    el.addEventListener("pointerleave", up);
-  };
-  bindHold(touchLeft, -1);
-  bindHold(touchRight, +1);
-
-  // ====== Botões ======
-  btnStart.addEventListener("click", () => start());
-  btnPause.addEventListener("click", () => togglePause());
-  btnRestart.addEventListener("click", () => restart());
-
-  function start(){
-    if (state.running && !state.over) return;
-    state.running = true;
-    state.paused = false;
-    state.over = false;
-    elStatus.textContent = "Correndo.";
-  }
-
-  function togglePause(){
-    if (!state.running || state.over) return;
-    state.paused = !state.paused;
-    elStatus.textContent = state.paused ? "Pausado." : "Correndo.";
-  }
-
-  function restart(){
-    enemies.length = 0;
-    coins.length = 0;
-    player.x = road.x;
-    player.vx = 0;
-
-    state.running = true;
-    state.paused = false;
-    state.over = false;
-    state.t = 0;
-    state.score = 0;
-    state.passes = 0;
-    state.speed = 520;
-    state.speedTarget = 520;
-    state.difficulty = 1;
-    state.spawnTimer = 0;
-    state.spawnEvery = 0.95;
-
-    elStatus.textContent = "Reiniciado.";
-    syncHud();
-  }
-
-  // ====== Spawning ======
-  function rand(){
-    // LCG simples para manter consistência
-    state.rngSeed = (1664525 * state.rngSeed + 1013904223) >>> 0;
-    return state.rngSeed / 4294967296;
-  }
-
-  function laneX(n){
-    // 3 faixas
-    const left = road.x - road.width/2;
-    const right = road.x + road.width/2;
-    const lanes = 3;
-    const laneW = (right - left) / lanes;
-    return left + laneW*(n + 0.5);
-  }
-
-  function spawnEnemy(){
-    const lane = Math.floor(rand() * 3);
-    const x = laneX(lane) + (rand() - 0.5) * 12;
-    const w = 44 + rand()*6;
-    const h = 76 + rand()*10;
-    const color = rand() < 0.5 ? "#ff5a7a" : "#6aa6ff";
-    const vy = state.speed * (0.52 + rand()*0.26); // inimigo vem "descendo" relativamente
-    enemies.push({
-      x, y: -h - 20, w, h,
-      vy,
-      color,
-      passed: false,
+  if(rand()<0.3){
+    coins.push({
+      x: laneCenter(lane)+(rand()-0.5)*30,
+      y:-160,
+      r:10,
+      vy:state.speed*0.55,
+      taken:false
     });
+  }
+}
 
-    // chance de coin
-    if (rand() < 0.35){
-      coins.push({
-        x: x + (rand()-0.5) * 35,
-        y: -h - 80,
-        r: 10,
-        vy: vy * 0.98,
-        taken: false,
-      });
+/* ================= AUTOPLAY IA ================= */
+function aiDecision(){
+  const look = 260;
+  const danger=[0,0,0];
+  const bonus=[0,0,0];
+
+  for(const e of enemies){
+    if(e.y<player.y && e.y>player.y-look){
+      const l=laneIndex(e.x);
+      danger[l]+=1/(player.y-e.y);
+    }
+  }
+  for(const c of coins){
+    if(!c.taken && c.y<player.y && c.y>player.y-look){
+      bonus[laneIndex(c.x)] += 0.3;
+    }
+  }
+  let bestLane=laneIndex(player.x);
+  let bestScore=danger[bestLane]-bonus[bestLane];
+
+  for(let i=0;i<LANES;i++){
+    const s=danger[i]-bonus[i];
+    if(s<bestScore){bestScore=s;bestLane=i;}
+  }
+  return {
+    targetX: laneCenter(bestLane),
+    boost: bestScore<0.4
+  };
+}
+
+/* ================= LOOP ================= */
+let last=performance.now();
+function loop(now){
+  const dt=Math.min(0.033,(now-last)/1000);
+  last=now;
+  update(dt);
+  draw();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+/* ================= UPDATE ================= */
+function update(dt){
+  state.t+=dt;
+  state.difficulty=1+state.t/20;
+  state.spawnEvery=clamp(0.9-(state.difficulty-1)*0.08,0.4,0.9);
+  state.speedTarget=520+(state.difficulty-1)*120;
+  state.speed=lerp(state.speed,state.speedTarget,0.05);
+
+  let dir=0;
+  let boost=false;
+
+  if(AUTO_PLAY){
+    const ai=aiDecision();
+    const dx=ai.targetX-player.x;
+    if(Math.abs(dx)>6) dir=dx>0?1:-1;
+    boost=ai.boost;
+  }
+
+  player.vx+=dir*2100*dt;
+  player.vx*=0.86;
+  player.x+=player.vx*dt;
+
+  const minX=road.x-road.width/2+player.w/2;
+  const maxX=road.x+road.width/2-player.w/2;
+  player.x=clamp(player.x,minX,maxX);
+
+  state.spawnTimer+=dt;
+  if(state.spawnTimer>state.spawnEvery){
+    state.spawnTimer=0;
+    spawnEnemy();
+  }
+
+  for(const e of enemies){
+    e.y+=e.vy*dt;
+    if(!e.passed && e.y>player.y){
+      e.passed=true;
+      state.passes++;
+      state.score+=120;
+    }
+    if(Math.abs(e.x-player.x)<(e.w+player.w)/2 &&
+       Math.abs(e.y-player.y)<(e.h+player.h)/2){
+      enemies.length=0;
+      coins.length=0;
     }
   }
 
-  // ====== Colisão ======
-  function rectsOverlap(a, b){
-    return (
-      a.x - a.w/2 < b.x + b.w/2 &&
-      a.x + a.w/2 > b.x - b.w/2 &&
-      a.y - a.h/2 < b.y + b.h/2 &&
-      a.y + a.h/2 > b.y - b.h/2
-    );
-  }
-
-  // ====== Render ======
-  function drawRoad(scroll){
-    // fundo
-    ctx.clearRect(0,0,W,H);
-
-    // céu/gradiente
-    const g = ctx.createLinearGradient(0,0,0,H);
-    g.addColorStop(0, "rgba(255,255,255,0.06)");
-    g.addColorStop(1, "rgba(0,0,0,0.18)");
-    ctx.fillStyle = g;
-    ctx.fillRect(0,0,W,H);
-
-    // área fora da pista (grama)
-    ctx.fillStyle = "rgba(23, 44, 27, 0.45)";
-    ctx.fillRect(0,0,W,H);
-
-    // pista
-    const left = road.x - road.width/2;
-    const top = 0;
-    ctx.fillStyle = "rgba(10, 12, 18, 0.75)";
-    ctx.fillRect(left, top, road.width, H);
-
-    // acostamento
-    ctx.fillStyle = "rgba(255,255,255,0.06)";
-    ctx.fillRect(left - road.shoulder, 0, road.shoulder, H);
-    ctx.fillRect(left + road.width, 0, road.shoulder, H);
-
-    // linhas centrais
-    const lanes = 3;
-    const laneW = road.width / lanes;
-
-    ctx.lineWidth = 4;
-    for (let i=1;i<lanes;i++){
-      const x = left + laneW*i;
-      ctx.strokeStyle = "rgba(255,255,255,0.18)";
-      ctx.setLineDash([22, 20]);
-      ctx.lineDashOffset = -scroll;
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, H);
-      ctx.stroke();
+  for(const c of coins){
+    c.y+=c.vy*dt;
+    if(!c.taken){
+      const dx=c.x-player.x;
+      const dy=c.y-player.y;
+      if(dx*dx+dy*dy<(c.r+18)**2){
+        c.taken=true;
+        state.score+=250;
+      }
     }
-
-    // bordas
-    ctx.setLineDash([]);
-    ctx.lineWidth = 6;
-    ctx.strokeStyle = "rgba(255,255,255,0.12)";
-    ctx.strokeRect(left, 0, road.width, H);
-
-    // HUD overlay (sombras)
-    ctx.fillStyle = "rgba(0,0,0,0.12)";
-    ctx.fillRect(0,0,W,72);
   }
 
-  function drawCar(x,y,w,h, color, highlight=false){
-    // carro simples com corpo + para-brisa
-    ctx.save();
-    ctx.translate(x, y);
+  state.score+=state.speed*dt*0.1;
 
-    // sombra
-    ctx.fillStyle = "rgba(0,0,0,0.25)";
+  elScore.textContent=state.score|0;
+  elSpeed.textContent=Math.round(state.speed/10);
+  elPasses.textContent=state.passes;
+}
+
+/* ================= DRAW ================= */
+function draw(){
+  ctx.clearRect(0,0,W,H);
+
+  ctx.fillStyle="#1b2a62";
+  ctx.fillRect(0,0,W,H);
+
+  ctx.fillStyle="#0b0f1c";
+  ctx.fillRect(road.x-road.width/2,0,road.width,H);
+
+  ctx.setLineDash([24,18]);
+  ctx.strokeStyle="rgba(255,255,255,0.2)";
+  ctx.lineWidth=4;
+  for(let i=1;i<LANES;i++){
+    const x=road.x-road.width/2+(road.width/LANES)*i;
     ctx.beginPath();
-    ctx.ellipse(0, h*0.42, w*0.46, h*0.18, 0, 0, Math.PI*2);
-    ctx.fill();
-
-    // corpo
-    ctx.fillStyle = color;
-    roundRect(-w/2, -h/2, w, h, 12, true, false);
-
-    // capô/vidro
-    ctx.fillStyle = "rgba(255,255,255,0.22)";
-    roundRect(-w*0.32, -h*0.34, w*0.64, h*0.22, 10, true, false);
-    ctx.fillStyle = "rgba(255,255,255,0.12)";
-    roundRect(-w*0.30, h*0.02, w*0.60, h*0.28, 10, true, false);
-
-    // faróis
-    ctx.fillStyle = highlight ? "rgba(255,255,255,0.55)" : "rgba(255,255,255,0.35)";
-    roundRect(-w*0.36, -h*0.46, w*0.22, h*0.10, 6, true, false);
-    roundRect(w*0.14, -h*0.46, w*0.22, h*0.10, 6, true, false);
-
-    ctx.restore();
-  }
-
-  function roundRect(x, y, w, h, r, fill, stroke){
-    const rr = Math.min(r, w/2, h/2);
-    ctx.beginPath();
-    ctx.moveTo(x+rr, y);
-    ctx.arcTo(x+w, y, x+w, y+h, rr);
-    ctx.arcTo(x+w, y+h, x, y+h, rr);
-    ctx.arcTo(x, y+h, x, y, rr);
-    ctx.arcTo(x, y, x+w, y, rr);
-    ctx.closePath();
-    if (fill) ctx.fill();
-    if (stroke) ctx.stroke();
-  }
-
-  function drawCoin(c){
-    ctx.save();
-    ctx.translate(c.x, c.y);
-    ctx.fillStyle = "rgba(255, 214, 102, 0.9)";
-    ctx.beginPath();
-    ctx.arc(0,0,c.r,0,Math.PI*2);
-    ctx.fill();
-    ctx.strokeStyle = "rgba(0,0,0,0.25)";
-    ctx.lineWidth = 2;
+    ctx.moveTo(x,0);
+    ctx.lineTo(x,H);
     ctx.stroke();
-    ctx.restore();
   }
+  ctx.setLineDash([]);
 
-  function drawOverlay(){
-    if (!state.running){
-      centerPanel("Race Game", "Clique em Iniciar ou pressione Espaço.");
-      return;
-    }
-    if (state.paused){
-      centerPanel("Pausado", "Pressione P para continuar.");
-      return;
-    }
-    if (state.over){
-      centerPanel("Fim de jogo", "Pressione R para reiniciar.");
-      return;
+  for(const c of coins){
+    if(!c.taken){
+      ctx.fillStyle="#ffd666";
+      ctx.beginPath();
+      ctx.arc(c.x,c.y,c.r,0,Math.PI*2);
+      ctx.fill();
     }
   }
 
-  function centerPanel(title, subtitle){
-    ctx.save();
-    ctx.fillStyle = "rgba(0,0,0,0.42)";
-    ctx.fillRect(0,0,W,H);
-
-    const panelW = W * 0.82;
-    const panelH = 170;
-    const x = (W - panelW)/2;
-    const y = (H - panelH)/2;
-
-    ctx.fillStyle = "rgba(17,26,51,0.85)";
-    ctx.strokeStyle = "rgba(255,255,255,0.16)";
-    ctx.lineWidth = 2;
-    roundRect(x, y, panelW, panelH, 18, true, true);
-
-    ctx.fillStyle = "rgba(232,238,255,1)";
-    ctx.font = "700 28px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial";
-    ctx.textAlign = "center";
-    ctx.fillText(title, W/2, y + 62);
-
-    ctx.fillStyle = "rgba(159,176,255,0.95)";
-    ctx.font = "500 15px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial";
-    ctx.fillText(subtitle, W/2, y + 100);
-
-    ctx.fillStyle = "rgba(159,176,255,0.85)";
-    ctx.font = "500 13px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial";
-    ctx.fillText("Controles: ← → / A D | Boost: ↑ / W | Pausa: P | Reiniciar: R", W/2, y + 132);
-
-    ctx.restore();
+  for(const e of enemies){
+    ctx.fillStyle="#ff5a7a";
+    ctx.fillRect(e.x-e.w/2,e.y-e.h/2,e.w,e.h);
   }
 
-  // ====== Loop ======
-  let last = performance.now();
-  function frame(now){
-    const dt = Math.min(0.033, (now - last) / 1000); // limita para estabilidade
-    last = now;
-
-    update(dt);
-    render(now);
-
-    requestAnimationFrame(frame);
-  }
-  requestAnimationFrame(frame);
-
-  function update(dt){
-    if (!state.running || state.paused || state.over) return;
-
-    state.t += dt;
-
-    // dificuldade aumenta com o tempo
-    state.difficulty = 1 + state.t / 18; // cresce lentamente
-    state.spawnEvery = clamp(0.95 - (state.difficulty-1)*0.08, 0.40, 0.95);
-
-    // velocidade alvo (mundo) aumenta
-    state.speedTarget = 520 + (state.difficulty-1)*120;
-    // boost
-    const boost = keys.has("arrowup") || keys.has("w") ? 120 : 0;
-    state.speedTarget += boost;
-
-    state.speed = lerp(state.speed, state.speedTarget, 0.05);
-
-    // input horizontal
-    const leftKey  = keys.has("arrowleft") || keys.has("a");
-    const rightKey = keys.has("arrowright") || keys.has("d");
-
-    let dir = 0;
-    if (leftKey) dir -= 1;
-    if (rightKey) dir += 1;
-    dir += touchDir;
-
-    const accel = 2100;
-    const friction = 0.86;
-
-    player.vx += dir * accel * dt;
-    player.vx *= friction;
-
-    player.x += player.vx * dt;
-
-    // limites da pista
-    const leftEdge = road.x - road.width/2 + player.w*0.55;
-    const rightEdge = road.x + road.width/2 - player.w*0.55;
-    if (player.x < leftEdge){ player.x = leftEdge; player.vx = 0; }
-    if (player.x > rightEdge){ player.x = rightEdge; player.vx = 0; }
-
-    // spawn inimigos
-    state.spawnTimer += dt;
-    if (state.spawnTimer >= state.spawnEvery){
-      state.spawnTimer = 0;
-      spawnEnemy();
-      // chance de spawns extras com dificuldade
-      if (state.difficulty > 3 && rand() < 0.25) spawnEnemy();
-    }
-
-    // move inimigos e coins
-    for (const e of enemies){
-      e.y += e.vy * dt;
-      // marca ultrapassagem quando passa do jogador
-      if (!e.passed && e.y > player.y){
-        e.passed = true;
-        state.passes += 1;
-        state.score += 120; // bônus por ultrapassar
-      }
-    }
-    for (const c of coins){
-      c.y += c.vy * dt;
-    }
-
-    // colisões com inimigos
-    const pRect = { x: player.x, y: player.y, w: player.w, h: player.h };
-    for (const e of enemies){
-      const eRect = { x: e.x, y: e.y, w: e.w, h: e.h };
-      if (rectsOverlap(pRect, eRect)){
-        gameOver();
-        break;
-      }
-    }
-
-    // pegar moedas
-    for (const c of coins){
-      if (c.taken) continue;
-      const dx = c.x - player.x;
-      const dy = c.y - (player.y - player.h*0.15);
-      if (dx*dx + dy*dy < (c.r + 18) * (c.r + 18)){
-        c.taken = true;
-        state.score += 250;
-      }
-    }
-
-    // limpa fora da tela
-    for (let i=enemies.length-1;i>=0;i--){
-      if (enemies[i].y - enemies[i].h/2 > H + 40) enemies.splice(i,1);
-    }
-    for (let i=coins.length-1;i>=0;i--){
-      if (coins[i].taken || coins[i].y - coins[i].r > H + 40) coins.splice(i,1);
-    }
-
-    // score por distância
-    state.score += Math.floor(state.speed * dt * 0.10);
-
-    syncHud();
-  }
-
-  function gameOver(){
-    state.over = true;
-    state.running = true; // mantém render/overlay
-    elStatus.textContent = "Colisão. Fim de jogo.";
-
-    if (state.score > bestScore){
-      bestScore = state.score;
-      localStorage.setItem(BEST_KEY, String(bestScore));
-      elBest.textContent = bestScore.toLocaleString("pt-BR");
-    }
-  }
-
-  function syncHud(){
-    elScore.textContent = Math.max(0, state.score|0).toLocaleString("pt-BR");
-    // conversão simples para "km/h" só para feedback (não física real)
-    const kmh = Math.round((state.speed / 10) * 1.35);
-    elSpeed.textContent = kmh.toLocaleString("pt-BR");
-    elPasses.textContent = state.passes.toLocaleString("pt-BR");
-  }
-
-  function render(now){
-    const scroll = (state.t * state.speed * 0.18) % 1000;
-    drawRoad(scroll);
-
-    // desenha coins
-    for (const c of coins){
-      if (!c.taken) drawCoin(c);
-    }
-
-    // desenha inimigos
-    for (const e of enemies){
-      drawCar(e.x, e.y, e.w, e.h, e.color, false);
-    }
-
-    // desenha player
-    drawCar(player.x, player.y, player.w, player.h, "rgba(77,227,165,0.95)", true);
-
-    // topo: mini texto
-    ctx.save();
-    ctx.fillStyle = "rgba(232,238,255,0.92)";
-    ctx.font = "600 13px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial";
-    ctx.textAlign = "left";
-    ctx.fillText("Objetivo: sobreviva e ultrapasse. Moedas valem pontos.", 14, 26);
-    ctx.fillStyle = "rgba(159,176,255,0.85)";
-    ctx.fillText("Dificuldade: " + state.difficulty.toFixed(1), 14, 48);
-    ctx.restore();
-
-    drawOverlay();
-  }
-
-  // estado inicial (não rodando)
-  state.running = false;
-  state.paused = false;
-  state.over = false;
-  syncHud();
-})();
+  ctx.fillStyle="#4de3a5";
+  ctx.fillRect(player.x-player.w/2,player.y-player.h/2,player.w,player.h);
+}
 </script>
 </body>
 </html>
