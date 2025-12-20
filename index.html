@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Race Game – IA Infinita (Stream)</title>
+<title>Race Game – IA Infinita (Stream Final)</title>
 
 <style>
 body{
@@ -45,13 +45,12 @@ canvas{
     <div>Faixa IA: <span id="lane">1</span></div>
   </div>
   <canvas id="game" width="480" height="800"></canvas>
-  <div class="note">Modo infinito • IA nunca perde</div>
+  <div class="note">Modo infinito real • IA contínua • Sem resets</div>
 </div>
 
 <script>
 /* ================= CONFIG ================= */
 const LANES = 3;
-const REMOVE_OBSTACLE_IF_TRAPPED = true;
 
 /* ================= CANVAS ================= */
 const canvas = document.getElementById("game");
@@ -62,14 +61,6 @@ const H = canvas.height;
 /* ================= HUD ================= */
 const elScore = document.getElementById("score");
 const elLane = document.getElementById("lane");
-
-/* ================= LOAD IMAGES ================= */
-const imgPlayer = new Image();
-const imgEnemy  = new Image();
-
-/* 🔁 TROQUE OS ARQUIVOS AQUI */
-imgPlayer.src = "assets/player.png";
-imgEnemy.src  = "assets/enemy.png";
 
 /* ================= ROAD ================= */
 const road = {
@@ -88,9 +79,10 @@ const player = {
 
 /* ================= STATE ================= */
 let score = 0;
-let speed = 420;
+let speed = 360;
+let speedGrowth = 3;        // crescimento contínuo
 let spawnTimer = 0;
-let spawnEvery = 0.9;
+let spawnEvery = 1.1;       // nunca “trava” padrões
 
 /* ================= OBJECTS ================= */
 const enemies = [];
@@ -110,17 +102,19 @@ function spawnEnemy(){
     x: laneCenter(lane),
     y: -140,
     w: 52,
-    h: 96
+    h: 96,
+    vy: speed * (0.85 + Math.random()*0.2)
   });
 }
 
-/* ================= IA (INFINITA) ================= */
+/* ================= IA (SUAVE E INFINITA) ================= */
 function chooseBestLane(){
   const danger = new Array(LANES).fill(0);
 
   for(const e of enemies){
-    if(e.y < player.y && player.y - e.y < 260){
-      danger[e.lane]++;
+    const dy = player.y - e.y;
+    if(dy > 0 && dy < 300){
+      danger[e.lane] += 1 / dy;
     }
   }
 
@@ -133,12 +127,6 @@ function chooseBestLane(){
       best = i;
     }
   }
-
-  /* 🚨 Se TODAS as faixas estiverem perigosas */
-  if(REMOVE_OBSTACLE_IF_TRAPPED && danger.every(v => v > 0)){
-    enemies.shift(); // remove o mais antigo
-  }
-
   return best;
 }
 
@@ -158,25 +146,35 @@ function loop(now){
 
 /* ================= UPDATE ================= */
 function update(dt){
-  score += dt * 100;
-  elScore.textContent = score | 0;
+  /* score infinito */
+  score += dt * 120;
+  elScore.textContent = Math.floor(score);
 
-  /* IA */
-  player.lane = chooseBestLane();
-  elLane.textContent = player.lane;
-  player.x = laneCenter(player.lane);
+  /* aceleração contínua (sem ciclos) */
+  speed += speedGrowth * dt;
 
-  /* Spawn */
+  /* IA decide */
+  const targetLane = chooseBestLane();
+  elLane.textContent = targetLane;
+
+  /* movimento SUAVE */
+  const targetX = laneCenter(targetLane);
+  player.x += (targetX - player.x) * 6 * dt;
+  player.lane = targetLane;
+
+  /* spawn */
   spawnTimer += dt;
   if(spawnTimer > spawnEvery){
     spawnTimer = 0;
     spawnEnemy();
   }
 
-  /* Move inimigos */
-  for(let i = enemies.length - 1; i >= 0; i--){
-    enemies[i].y += speed * dt;
-    if(enemies[i].y > H + 200){
+  /* move inimigos */
+  for(let i=enemies.length-1;i>=0;i--){
+    enemies[i].y += enemies[i].vy * dt;
+
+    /* nunca remover abruptamente perto do player */
+    if(enemies[i].y > H + 300){
       enemies.splice(i,1);
     }
   }
@@ -186,15 +184,12 @@ function update(dt){
 function draw(){
   ctx.clearRect(0,0,W,H);
 
-  /* fundo */
   ctx.fillStyle="#1b2a62";
   ctx.fillRect(0,0,W,H);
 
-  /* pista */
   ctx.fillStyle="#0b0f1c";
   ctx.fillRect(road.x-road.width/2,0,road.width,H);
 
-  /* linhas */
   ctx.strokeStyle="rgba(255,255,255,0.25)";
   ctx.setLineDash([24,18]);
   ctx.lineWidth=4;
@@ -207,22 +202,17 @@ function draw(){
   }
   ctx.setLineDash([]);
 
-  /* inimigos (IMAGEM) */
+  /* inimigos */
+  ctx.fillStyle="#ff5a7a";
   for(const e of enemies){
-    ctx.drawImage(
-      imgEnemy,
-      e.x - e.w/2,
-      e.y - e.h/2,
-      e.w,
-      e.h
-    );
+    ctx.fillRect(e.x-e.w/2,e.y-e.h/2,e.w,e.h);
   }
 
-  /* jogador (IMAGEM) */
-  ctx.drawImage(
-    imgPlayer,
-    player.x - player.w/2,
-    player.y - player.h/2,
+  /* player */
+  ctx.fillStyle="#4de3a5";
+  ctx.fillRect(
+    player.x-player.w/2,
+    player.y-player.h/2,
     player.w,
     player.h
   );
