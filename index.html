@@ -1,222 +1,279 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Race Game</title>
+    
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-73WH4DNDRT"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
 
-<style>
-body{
-  margin:0;
-  background:#0b1020;
-  font-family:system-ui, Arial;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  min-height:100vh;
-  color:#e8eeff;
-}
-.wrap{width:520px}
-canvas{
-  width:100%;
-  background:#111a33;
-  border-radius:14px;
-  display:block;
-}
-.hud{
-  display:flex;
-  justify-content:space-between;
-  margin-bottom:6px;
-  font-weight:600;
-}
-.note{
-  text-align:center;
-  font-size:12px;
-  opacity:0.7;
-  margin-top:4px;
-}
-</style>
+  gtag('config', 'G-73WH4DNDRT');
+</script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Humornacompra</title>
+
+    <!-- FAVICON -->
+    <link rel="icon" type="image/png" href="web1.png">
+
+    <style>
+        :root {
+            --accent: #8da9ff;
+            --accent2: #cfe0ff;
+            --glass-bg: rgba(255,255,255,0.08);
+            --glass-border: rgba(255,255,255,0.18);
+            --title-color: #e6d5b8;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 40px 20px;
+            background: url('fundoweb.png') repeat center center fixed;
+            background-size: cover;
+            backdrop-filter: blur(14px);
+            animation: bgMove 35s linear infinite;
+            overflow-x: hidden; /* remove qualquer barra branca/scroll horizontal */
+        }
+
+        @keyframes bgMove {
+            0% { background-position: 0 0; }
+            50% { background-position: -70px -50px; }
+            100% { background-position: 0 0; }
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        /* LOGO */
+        .logo-wrapper {
+            position: relative;
+            width: 220px;
+            height: 220px;
+            margin: 0 auto;
+        }
+
+        .profile-pic {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            position: absolute;
+            top: 35px;
+            left: 35px;
+            animation: colorShift 5s ease-in-out infinite;
+        }
+
+        @keyframes colorShift {
+            0% { box-shadow: 0 0 25px #8da9ff, 0 0 35px #8da9ff; }
+            50% { box-shadow: 0 0 45px #ffffff, 0 0 70px #ffffff; }
+            100% { box-shadow: 0 0 25px #8da9ff, 0 0 35px #8da9ff; }
+        }
+
+        /* Orbita */
+        .orbital-group {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 220px;
+            height: 220px;
+            animation: orbit 20s linear infinite;
+            transform-origin: center center;
+        }
+
+        @keyframes orbit {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .lua-img {
+            width: 38px;
+            height: 38px;
+            position: absolute;
+            top: -10px;
+            left: 92px;
+            animation: luaSpin 20s linear infinite;
+        }
+
+        @keyframes luaSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Nome */
+        .profile-name {
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            margin: 25px 0 20px;
+        }
+
+        /* Titulos */
+        h2, .section-title {
+            text-align: center;
+            font-size: 26px;
+            font-weight: bold;
+            margin: 35px 0 15px 0;
+            color: var(--title-color);
+        }
+
+        /* Ícones principais com brilho + pulso */
+        .icon-img {
+            width: 30px;
+            height: 30px;
+            animation: softPulse 2.2s ease-in-out infinite;
+            filter: drop-shadow(0 0 6px var(--accent));
+        }
+
+        @keyframes softPulse {
+            0% { transform: scale(1); filter: drop-shadow(0 0 6px var(--accent)); }
+            50% { transform: scale(1.15); filter: drop-shadow(0 0 12px var(--accent2)); }
+            100% { transform: scale(1); filter: drop-shadow(0 0 6px var(--accent)); }
+        }
+
+        /* Ícones de contato — sem brilho/pulso */
+        .contato-item img {
+            filter: none !important;
+            animation: none !important;
+        }
+
+        /* Cards */
+        .link-card {
+            background: var(--glass-bg);
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin: 12px 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #fff;
+            font-size: 18px;
+            border: 1px solid var(--glass-border);
+            text-decoration: none;
+            transition: 0.25s ease;
+        }
+
+        .link-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+            box-shadow: 0 0 15px var(--accent2), 0 0 25px var(--accent);
+        }
+
+        /* Contato Box */
+        .contato-box {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .contato-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 10px 0;
+            font-size: 20px;
+        }
+
+        /* Site clicável sem azul */
+        .site-link {
+            color: inherit;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(255,255,255,0.25);
+            transition: 0.25s ease;
+        }
+
+        .site-link:hover {
+            color: #d2e4ff;
+            text-shadow: 0 0 8px #9fc5ff;
+            border-bottom-color: #d2e4ff;
+        }
+
+        /* Rodapé sem barra branca */
+        footer {
+            width: 100%;
+            padding: 20px;
+            text-align: center;
+            opacity: 0.6;
+            margin-top: 40px;
+        }
+
+    </style>
 </head>
 
 <body>
-<div class="wrap">
-  <div class="hud">
-    <div>Points: <span id="score">0</span></div>
-  </div>
-  <canvas id="game" width="480" height="800"></canvas>
-  <div class="note">Humornacompra Product</div>
-</div>
 
-<script>
-/* ================= CONFIG ================= */
-const LANES = 3;
+    <div class="container">
 
-/* ================= CANVAS ================= */
-const canvas = document.getElementById("game");
-const ctx = canvas.getContext("2d");
-const W = canvas.width;
-const H = canvas.height;
+        <!-- LOGO -->
+        <div class="logo-wrapper">
+            <img src="logo.jpg" class="profile-pic">
+            <div class="orbital-group">
+                <img src="lua1.png" class="lua-img">
+            </div>
+        </div>
 
-/* ================= HUD ================= */
-const elScore = document.getElementById("score");
-const elLane = document.getElementById("lane");
+        <p class="profile-name">Humornacompra</p>
 
-/* ================= ROAD ================= */
-const road = {
-  x: W / 2,
-  width: W * 0.66
-};
+        <!-- REDES SOCIAIS -->
+        <h2>Redes Sociais</h2>
+        
+                
+        <a href="https://humornacompra.shop" class="link-card">
+            <img src="web2.png" class="icon-img"> humornacompra.shop
+        </a>
+            
+        <a href="https://www.tiktok.com/@humornacompra" class="link-card">
+            <img src="tiktok.png" class="icon-img"> TikTok
+        </a>
+        
+        <a href="https://www.instagram.com/humornacompra/" class="link-card">
+            <img src="instagram.png" class="icon-img"> Instagram
+        </a>
 
-/* ================= PLAYER ================= */
-const player = {
-  lane: 1,
-  x: 0,
-  y: H * 0.8,
-  w: 52,
-  h: 96
-};
+        <a href="https://x.com/humornacompra" class="link-card">
+            <img src="x.png" class="icon-img"> X Twitter
+        </a>
 
-/* ================= STATE ================= */
-let score = 0;
-let speed = 360;
-let speedGrowth = 3;        // crescimento contínuo
-let spawnTimer = 0;
-let spawnEvery = 1.1;       // nunca “trava” padrões
+        <!-- COMUNIDADE -->
+        <div class="section-title">Comunidade</div>
 
-/* ================= OBJECTS ================= */
-const enemies = [];
+        <a href="https://discord.gg/jjnBDxH6M2" class="link-card">
+            <img src="discord.png" class="icon-img"> Discord
+        </a>
 
-/* ================= LANES ================= */
-function laneCenter(lane){
-  const left = road.x - road.width / 2;
-  const laneW = road.width / LANES;
-  return left + laneW * (lane + 0.5);
-}
+        <a href="#" class="link-card">
+            <img src="whatsapp.png" class="icon-img"> WhatsApp (em breve)
+        </a>
 
-/* ================= SPAWN ================= */
-function spawnEnemy(){
-  const lane = Math.floor(Math.random() * LANES);
-  enemies.push({
-    lane,
-    x: laneCenter(lane),
-    y: -140,
-    w: 52,
-    h: 96,
-    vy: speed * (0.85 + Math.random()*0.2)
-  });
-}
+        <!-- CONTATO -->
+        <h2>Contato</h2>
 
-/* ================= IA (SUAVE E INFINITA) ================= */
-function chooseBestLane(){
-  const danger = new Array(LANES).fill(0);
+        <div class="contato-box">
+            <p class="contato-item">
+                <img src="email.png" width="26"> humornacompra@outlook.com
+            </p>
 
-  for(const e of enemies){
-    const dy = player.y - e.y;
-    if(dy > 0 && dy < 300){
-      danger[e.lane] += 1 / dy;
-    }
-  }
+            
+                </a>
+            </p>
+        </div>
 
-  let best = player.lane;
-  let min = danger[player.lane];
+    </div>
 
-  for(let i=0;i<LANES;i++){
-    if(danger[i] < min){
-      min = danger[i];
-      best = i;
-    }
-  }
-  return best;
-}
+    <footer>
+        © 2025 Humornacompra • Todos os direitos reservados
+    </footer>
 
-/* ================= LOOP ================= */
-let last = performance.now();
-requestAnimationFrame(loop);
-
-function loop(now){
-  const dt = Math.min(0.033, (now - last) / 1000);
-  last = now;
-
-  update(dt);
-  draw();
-
-  requestAnimationFrame(loop);
-}
-
-/* ================= UPDATE ================= */
-function update(dt){
-  /* score infinito */
-  score += dt * 120;
-  elScore.textContent = Math.floor(score);
-
-  /* aceleração contínua (sem ciclos) */
-  speed += speedGrowth * dt;
-
-  /* IA decide */
-  const targetLane = chooseBestLane();
-  elLane.textContent = targetLane;
-
-  /* movimento SUAVE */
-  const targetX = laneCenter(targetLane);
-  player.x += (targetX - player.x) * 6 * dt;
-  player.lane = targetLane;
-
-  /* spawn */
-  spawnTimer += dt;
-  if(spawnTimer > spawnEvery){
-    spawnTimer = 0;
-    spawnEnemy();
-  }
-
-  /* move inimigos */
-  for(let i=enemies.length-1;i>=0;i--){
-    enemies[i].y += enemies[i].vy * dt;
-
-    /* nunca remover abruptamente perto do player */
-    if(enemies[i].y > H + 300){
-      enemies.splice(i,1);
-    }
-  }
-}
-
-/* ================= DRAW ================= */
-function draw(){
-  ctx.clearRect(0,0,W,H);
-
-  ctx.fillStyle="#1b2a62";
-  ctx.fillRect(0,0,W,H);
-
-  ctx.fillStyle="#0b0f1c";
-  ctx.fillRect(road.x-road.width/2,0,road.width,H);
-
-  ctx.strokeStyle="rgba(255,255,255,0.25)";
-  ctx.setLineDash([24,18]);
-  ctx.lineWidth=4;
-  for(let i=1;i<LANES;i++){
-    const x = laneCenter(i) - road.width / LANES / 2;
-    ctx.beginPath();
-    ctx.moveTo(x,0);
-    ctx.lineTo(x,H);
-    ctx.stroke();
-  }
-  ctx.setLineDash([]);
-
-  /* inimigos */
-  ctx.fillStyle="#ff5a7a";
-  for(const e of enemies){
-    ctx.fillRect(e.x-e.w/2,e.y-e.h/2,e.w,e.h);
-  }
-
-  /* player */
-  ctx.fillStyle="#4de3a5";
-  ctx.fillRect(
-    player.x-player.w/2,
-    player.y-player.h/2,
-    player.w,
-    player.h
-  );
-}
-</script>
 </body>
 </html>
-
