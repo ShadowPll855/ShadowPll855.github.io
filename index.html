@@ -2,267 +2,269 @@
 <html lang="pt-BR">
 <head>
 
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-73WH4DNDRT"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-73WH4DNDRT');
-</script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-73WH4DNDRT"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-73WH4DNDRT');
+  </script>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Humornacompra</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Esquadrias Peres</title>
 
-<link rel="icon" type="image/png" href="web1.png">
+  <link rel="icon" type="image/png" href="web1.png">
 
-<style>
-:root {
-    --accent: #8da9ff;
-    --accent2: #cfe0ff;
-    --glass-bg: rgba(255,255,255,0.08);
-    --glass-border: rgba(255,255,255,0.18);
-    --title-color: #e6d5b8;
-}
+  <style>
+    :root {
+      --accent: #8da9ff;
+      --accent2: #cfe0ff;
+      --glass-bg: rgba(255,255,255,0.08);
+      --glass-border: rgba(255,255,255,0.18);
+      --title-color: #e6d5b8;
+    }
 
-/* ===================== */
-/* FUNDO SLIDESHOW */
-/* ===================== */
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    color: #fff;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 100vh;
-    padding: 40px 20px;
-    overflow-x: hidden;
-    background: #000;
-    position: relative;
-}
+    /* ===================== */
+    /* FUNDO SLIDESHOW */
+    /* ===================== */
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 40px 20px;
+      overflow-x: hidden;
+      background: #000;
+      position: relative;
+    }
 
-/* Slides */
-.bg-slide {
-    position: fixed;
-    inset: 0;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    z-index: -3;
-    opacity: 0;
-    animation: slideShow 32s infinite;
-}
+    .bg-slide {
+      position: fixed;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      z-index: -3;
+      opacity: 0;
+      animation: slideShow 32s infinite;
+    }
 
-/* Cada slide com atraso */
-.bg1 { background-image: url("fundo1.png"); animation-delay: 0s; }
-.bg2 { background-image: url("fundo2.png"); animation-delay: 8s; }
-.bg3 { background-image: url("fundo3.png"); animation-delay: 16s; }
-.bg4 { background-image: url("fundo4.png"); animation-delay: 24s; }
+    .bg1 { background-image: url("fundo1.png"); animation-delay: 0s; }
+    .bg2 { background-image: url("fundo2.png"); animation-delay: 8s; }
+    .bg3 { background-image: url("fundo3.png"); animation-delay: 16s; }
+    .bg4 { background-image: url("fundo4.png"); animation-delay: 24s; }
 
-/* Animação suave */
-@keyframes slideShow {
-    0%   { opacity: 0; }
-    10%  { opacity: 1; }
-    25%  { opacity: 1; }
-    35%  { opacity: 0; }
-    100% { opacity: 0; }
-}
+    @keyframes slideShow {
+      0%   { opacity: 0; }
+      10%  { opacity: 1; }
+      25%  { opacity: 1; }
+      35%  { opacity: 0; }
+      100% { opacity: 0; }
+    }
 
-/* Camada de vidro/blur */
-.bg-glass {
-    position: fixed;
-    inset: 0;
-    z-index: -2;
-    background: rgba(0,0,0,0.35);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-}
+    .bg-glass {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      background: rgba(0,0,0,0.35);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
 
-/* ===================== */
-/* CONTEÚDO */
-/* ===================== */
+    /* ===================== */
+    /* CONTEÚDO */
+    /* ===================== */
+    .container {
+      width: 100%;
+      max-width: 500px;
+    }
 
-.container {
-    width: 100%;
-    max-width: 500px;
-}
+    /* LOGO */
+    .logo-wrapper {
+      position: relative;
+      width: 220px;
+      height: 220px;
+      margin: 0 auto;
+    }
 
-/* LOGO */
-.logo-wrapper {
-    position: relative;
-    width: 220px;
-    height: 220px;
-    margin: 0 auto;
-}
+    .profile-pic {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      position: absolute;
+      top: 35px;
+      left: 35px;
+      animation: colorShift 5s ease-in-out infinite;
+    }
 
-.profile-pic {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    position: absolute;
-    top: 35px;
-    left: 35px;
-    animation: colorShift 5s ease-in-out infinite;
-}
+    @keyframes colorShift {
+      0% { box-shadow: 0 0 25px #8da9ff, 0 0 35px #8da9ff; }
+      50% { box-shadow: 0 0 45px #ffffff, 0 0 70px #ffffff; }
+      100% { box-shadow: 0 0 25px #8da9ff, 0 0 35px #8da9ff; }
+    }
 
-@keyframes colorShift {
-    0% { box-shadow: 0 0 25px #8da9ff, 0 0 35px #8da9ff; }
-    50% { box-shadow: 0 0 45px #ffffff, 0 0 70px #ffffff; }
-    100% { box-shadow: 0 0 25px #8da9ff, 0 0 35px #8da9ff; }
-}
+    /* Órbita (mantida, caso você queira colocar algum ícone girando no futuro) */
+    .orbital-group {
+      position: absolute;
+      inset: 0;
+      animation: orbit 20s linear infinite;
+      transform-origin: center center;
+      pointer-events: none;
+    }
 
-/* Órbita */
-.orbital-group {
-    position: absolute;
-    inset: 0;
-    animation: orbit 20s linear infinite;
-}
+    @keyframes orbit {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
 
-@keyframes orbit {
-    from { transform: rotate(0deg); }
-    to   { transform: rotate(360deg); }
-}
+    .lua-img {
+      width: 38px;
+      height: 38px;
+      position: absolute;
+      top: -10px;
+      left: 92px;
+    }
 
-.lua-img {
-    width: 38px;
-    height: 38px;
-    position: absolute;
-    top: -10px;
-    left: 92px;
-}
+    .profile-name {
+      text-align: center;
+      font-size: 28px;
+      font-weight: bold;
+      margin: 25px 0 20px;
+    }
 
-/* Nome */
-.profile-name {
-    text-align: center;
-    font-size: 28px;
-    font-weight: bold;
-    margin: 25px 0 20px;
-}
+    h2, .section-title {
+      text-align: center;
+      font-size: 26px;
+      font-weight: bold;
+      margin: 35px 0 15px;
+      color: var(--title-color);
+    }
 
-/* Títulos */
-h2, .section-title {
-    text-align: center;
-    font-size: 26px;
-    font-weight: bold;
-    margin: 35px 0 15px;
-    color: var(--title-color);
-}
+    .icon-img {
+      width: 30px;
+      height: 30px;
+      animation: softPulse 2.2s ease-in-out infinite;
+      filter: drop-shadow(0 0 6px var(--accent));
+    }
 
-/* Ícones */
-.icon-img {
-    width: 30px;
-    height: 30px;
-    animation: softPulse 2.2s ease-in-out infinite;
-    filter: drop-shadow(0 0 6px var(--accent));
-}
+    @keyframes softPulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
 
-@keyframes softPulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.15); }
-    100% { transform: scale(1); }
-}
+    .link-card {
+      background: var(--glass-bg);
+      padding: 15px 20px;
+      border-radius: 12px;
+      margin: 12px 0;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      color: #fff;
+      font-size: 18px;
+      border: 1px solid var(--glass-border);
+      text-decoration: none;
+      transition: 0.25s ease;
+    }
 
-/* Cards */
-.link-card {
-    background: var(--glass-bg);
-    padding: 15px 20px;
-    border-radius: 12px;
-    margin: 12px 0;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    color: #fff;
-    font-size: 18px;
-    border: 1px solid var(--glass-border);
-    text-decoration: none;
-    transition: 0.25s ease;
-}
+    .link-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent);
+      box-shadow: 0 0 15px var(--accent2), 0 0 25px var(--accent);
+    }
 
-.link-card:hover {
-    transform: translateY(-4px);
-    border-color: var(--accent);
-    box-shadow: 0 0 15px var(--accent2), 0 0 25px var(--accent);
-}
+    .contato-box {
+      margin-top: 20px;
+      padding: 20px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
 
-/* Contato */
-.contato-box {
-    margin-top: 20px;
-    padding: 20px;
-    border-radius: 12px;
-    background: rgba(255,255,255,0.1);
-    border: 1px solid rgba(255,255,255,0.2);
-}
+    .contato-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 20px;
+      margin: 10px 0;
+    }
 
-.contato-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 20px;
-}
+    /* Contato sem pulso/brilho (mais limpo) */
+    .contato-item img {
+      animation: none !important;
+      filter: none !important;
+    }
 
-/* Rodapé */
-footer {
-    width: 100%;
-    padding: 20px;
-    text-align: center;
-    opacity: 0.6;
-    margin-top: 40px;
-}
-</style>
+    footer {
+      width: 100%;
+      padding: 20px;
+      text-align: center;
+      opacity: 0.6;
+      margin-top: 40px;
+    }
+  </style>
 </head>
 
 <body>
 
-<!-- SLIDES -->
-<div class="bg-slide bg1"></div>
-<div class="bg-slide bg2"></div>
-<div class="bg-slide bg3"></div>
-<div class="bg-slide bg4"></div>
-<div class="bg-glass"></div>
+  <!-- SLIDES -->
+  <div class="bg-slide bg1"></div>
+  <div class="bg-slide bg2"></div>
+  <div class="bg-slide bg3"></div>
+  <div class="bg-slide bg4"></div>
+  <div class="bg-glass"></div>
 
-<div class="container">
+  <div class="container">
 
+    <!-- LOGO -->
     <div class="logo-wrapper">
-        <img src="PeresLogo.png" class="profile-pic">
-        <div class="orbital-group">
+      <img src="PeresLogo.png" class="profile-pic" alt="Logo Esquadrias Peres">
+
+      <div class="orbital-group">
+        <!-- Se quiser um ícone orbitando, descomente e ajuste o arquivo -->
+        <!-- <img src="lua1.png" class="lua-img" alt="Ornamento"> -->
+      </div>
     </div>
 
     <p class="profile-name">Esquadrias Peres</p>
 
     <h2>Redes Sociais</h2>
 
-      <a href="https://www.instagram.com/humornacompra/" class="link-card">
-        <img src="instagram.png" class="icon-img"> Instagram
+    <a href="https://www.instagram.com/humornacompra/" class="link-card" target="_blank" rel="noopener">
+      <img src="instagram.png" class="icon-img" alt="Instagram"> Instagram
     </a>
 
-    <a href="https://www.tiktok.com/@humornacompra" class="link-card">
-        <img src="tiktok.png" class="icon-img"> TikTok
+    <a href="https://www.tiktok.com/@humornacompra" class="link-card" target="_blank" rel="noopener">
+      <img src="tiktok.png" class="icon-img" alt="TikTok"> TikTok
     </a>
 
-    <a href="https://x.com/humornacompra" class="link-card">
-        <img src="x.png" class="icon-img"> X Twitter
+    <a href="https://x.com/humornacompra" class="link-card" target="_blank" rel="noopener">
+      <img src="x.png" class="icon-img" alt="X"> X Twitter
     </a>
 
     <h2>Contato</h2>
 
     <div class="contato-box">
-        <p class="contato-item">
-            <img src="email.png" width="26"> esquadriasperes@gmail.com
-        </p>
-      
-        <p class="contato-item">
-            <img src="whatsapp.png" class="icon-img"> WhatsApp
-        </p>
+      <p class="contato-item">
+        <img src="email.png" width="26" alt="Email"> esquadriasperes@gmail.com
+      </p>
+
+      <p class="contato-item">
+        <img src="whatsapp.png" width="26" alt="WhatsApp"> WhatsApp
+      </p>
     </div>
 
-</div>
+  </div>
 
-<footer>
-© 2025 Esquadrias Peres • Todos os direitos reservados
-</footer>
+  <footer>
+    © 2025 Esquadrias Peres • Todos os direitos reservados
+  </footer>
 
 </body>
 </html>
-
