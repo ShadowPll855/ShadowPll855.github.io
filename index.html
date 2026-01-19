@@ -13,28 +13,36 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Esquadrias Peres</title>
-
   <link rel="icon" type="image/png" href="web1.png" />
 
   <style>
     :root{
-      --accent: #ff3b3b;      /* brilho vermelho */
+      --accent: #ff3b3b;
       --accent2:#ff8a8a;
-      --title-color:#ffd400;  /* títulos amarelos */
+      --title-color:#ffd400;
       --glass-bg: rgba(255,255,255,0.10);
       --glass-border: rgba(255,255,255,0.22);
       --text-soft: rgba(255,255,255,0.92);
+
+      /* Tipografia padrão do site (exceto títulos e nome) */
+      --font-base: Arial, sans-serif;
+      --font-size-base: 18px;
+      --line-height: 1.35;
     }
 
     * { box-sizing: border-box; }
 
     body{
       margin:0;
-      font-family: Arial, sans-serif;
+      font-family: var(--font-base);
+      font-size: var(--font-size-base);
+      line-height: var(--line-height);
       color:#fff;
+
       display:flex;
       flex-direction:column;
       align-items:center;
+
       min-height:100vh;
       padding:40px 20px;
       overflow-x:hidden;
@@ -51,11 +59,12 @@
       z-index:9999;
       pointer-events:none;
 
-      /* coloque seu PNG aqui */
-      background: url("porta-correr.png") center / cover no-repeat;
+      /* PNG que você vai colocar */
+      background: url("porta.png") center / cover no-repeat;
 
       animation: slideDoor 1.6s cubic-bezier(.2,.9,.2,1) forwards;
       animation-delay: .35s;
+      will-change: transform, opacity;
     }
     @keyframes slideDoor{
       0%   { transform: translateX(0); }
@@ -63,6 +72,8 @@
     }
     @media (prefers-reduced-motion: reduce){
       #sliding-door{ animation:none; opacity:0; visibility:hidden; }
+      .bg-slide{ animation: none; opacity: 1; }
+      .icon-img{ animation: none; }
     }
 
     /* ===================== */
@@ -76,10 +87,12 @@
       background-repeat:no-repeat;
       z-index:-3;
       opacity:0;
+
       animation:
         slideShow 32s infinite,
-        bgZoom 8s ease-in-out infinite;
-      transform: scale(1.02);
+        bgZoom 9s ease-in-out infinite;
+
+      transform: scale(1.04);
       will-change: transform, opacity;
     }
 
@@ -96,7 +109,6 @@
       100% { opacity:0; }
     }
 
-    /* zoom mais visível */
     @keyframes bgZoom{
       0%   { transform: scale(1.06); }
       100% { transform: scale(1.18); }
@@ -119,30 +131,23 @@
       max-width:520px;
     }
 
-    /* LOGO */
+    /* LOGO - mais previsível e “certinha” */
     .logo-wrapper{
-      width:230px;
-      height:230px;
+      width: 220px;
+      height: 220px;
       margin: 0 auto;
-      position:relative;
+      display:grid;
+      place-items:center;
     }
 
     .profile-pic{
-      width: 180px;
-      height: 180px;
+      width: 190px;
+      height: 190px;
       border-radius: 50%;
-      position:absolute;
-      top: 25px;
-      left: 25px;
-
-      /* remove “borda preta” / fundo escuro */
-      background: transparent;
-      padding: 0;
-
       object-fit: contain;
       object-position: center;
+      background: transparent;
 
-      /* brilho vermelho em volta */
       animation: glowRed 4.8s ease-in-out infinite;
       filter: drop-shadow(0 0 18px rgba(255, 0, 0, 0.28));
     }
@@ -166,36 +171,46 @@
       }
     }
 
+    /* NOME DA EMPRESA (mantém estilo próprio) */
     .profile-name{
       text-align:center;
       font-size: 34px;
       font-weight: 800;
       letter-spacing: 0.2px;
-      margin: 28px 0 18px;
+      margin: 24px 0 18px;
       color: var(--text-soft);
       text-shadow: 0 2px 18px rgba(0,0,0,0.45);
     }
 
+    /* TÍTULOS (mantém estilo próprio) */
     h2{
       text-align:center;
       font-size: 30px;
       color: var(--title-color);
       margin: 34px 0 18px;
       text-shadow: 0 0 10px rgba(255,212,0,0.35);
+      letter-spacing: 0.2px;
     }
 
-    /* CARDS MAIS LIMPOS */
+    /* CARDS */
     .link-card{
       background: rgba(255,255,255,0.10);
-      padding: 20px 18px;
+      padding: 18px 18px;
       border-radius: 14px;
       margin: 14px 0;
+
       display:flex;
       align-items:center;
-      gap: 16px;
-      font-size: 22px;
+      gap: 14px;
+
+      /* padrão tipográfico do site (não é título nem nome) */
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: 0.1px;
+
       text-decoration:none;
       color: var(--text-soft);
+
       border: 1px solid rgba(255,255,255,0.16);
       transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease, background .22s ease;
     }
@@ -209,10 +224,12 @@
         0 0 28px rgba(255, 59, 59, 0.16);
     }
 
-    /* ÍCONES: animação mais tranquila */
+    /* ÍCONES */
     .icon-img{
-      width: 36px;
-      height: 36px;
+      width: 34px;
+      height: 34px;
+      flex: 0 0 auto;
+
       filter: drop-shadow(0 0 6px rgba(255, 59, 59, 0.35));
       animation: iconFloat 3.6s ease-in-out infinite;
       transform-origin: center;
@@ -227,23 +244,28 @@
     /* CONTATO */
     .contato-box{
       margin-top: 18px;
-      padding: 22px;
+      padding: 20px;
       border-radius: 14px;
       background: rgba(255,255,255,0.10);
       border: 1px solid rgba(255,255,255,0.16);
-      font-size: 22px;
+
+      /* padrão tipográfico */
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: 0.1px;
     }
 
     .contato-item{
       display:flex;
       align-items:center;
-      gap: 14px;
+      gap: 12px;
       margin: 14px 0;
       color: var(--text-soft);
     }
 
-    /* sem animação no contato para ficar limpo */
     .contato-item img{
+      width: 26px;
+      height: 26px;
       filter: none !important;
       animation: none !important;
     }
@@ -251,18 +273,25 @@
     footer{
       margin-top: 46px;
       opacity: 0.65;
-      font-size: 16px;
+      font-size: 14px;
       text-align:center;
       color: rgba(255,255,255,0.8);
+      letter-spacing: 0.2px;
     }
 
     /* Mobile */
     @media (max-width: 420px){
+      body{ padding: 34px 16px; }
+
+      .logo-wrapper{ width: 200px; height: 200px; }
+      .profile-pic{ width: 170px; height: 170px; }
+
       .profile-name{ font-size: 30px; }
       h2{ font-size: 28px; }
-      .link-card{ font-size: 20px; padding: 18px 16px; }
-      .contato-box{ font-size: 20px; }
-      .icon-img{ width: 34px; height: 34px; }
+
+      .link-card{ font-size: 18px; padding: 16px 14px; }
+      .contato-box{ font-size: 18px; }
+      .icon-img{ width: 32px; height: 32px; }
     }
   </style>
 </head>
@@ -304,10 +333,10 @@
 
     <div class="contato-box">
       <div class="contato-item">
-        <img src="email.png" width="28" alt="Email"> esquadriasperes@gmail.com
+        <img src="email.png" alt="Email"> esquadriasperes@gmail.com
       </div>
       <div class="contato-item">
-        <img src="whatsapp.png" width="28" alt="WhatsApp"> WhatsApp
+        <img src="whatsapp.png" alt="WhatsApp"> WhatsApp
       </div>
     </div>
   </div>
@@ -321,8 +350,9 @@
       const door = document.getElementById("sliding-door");
       if (!door) return;
 
-      // remove após terminar a animação + um respiro
-      setTimeout(() => door.remove(), 2400);
+      // Remove após a animação terminar (1.6s) + delay (0.35s) + respiro
+      const totalMs = 1600 + 350 + 300;
+      setTimeout(() => door.remove(), totalMs);
     });
   </script>
 </body>
