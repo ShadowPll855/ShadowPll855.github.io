@@ -17,290 +17,191 @@
 
   <style>
     :root{
-      --accent: #ff3b3b;
-      --accent2:#ff8a8a;
+      --accent:#ff3b3b;
       --title-color:#ffd400;
-      --glass-bg: rgba(255,255,255,0.10);
-      --glass-border: rgba(255,255,255,0.22);
-      --text-soft: rgba(255,255,255,0.92);
-
-      /* Tipografia padrão do site (exceto títulos e nome) */
+      --text-soft:rgba(255,255,255,0.92);
       --font-base: Arial, sans-serif;
-      --font-size-base: 18px;
-      --line-height: 1.35;
     }
 
-    * { box-sizing: border-box; }
+    *{ box-sizing:border-box; }
 
     body{
       margin:0;
-      font-family: var(--font-base);
-      font-size: var(--font-size-base);
-      line-height: var(--line-height);
+      font-family:var(--font-base);
+      font-size:18px;
+      line-height:1.35;
       color:#fff;
-
       display:flex;
       flex-direction:column;
       align-items:center;
-
       min-height:100vh;
       padding:40px 20px;
-      overflow-x:hidden;
       background:#000;
-      position:relative;
+      overflow-x:hidden;
     }
 
-    /* ===================== */
-    /* PORTA DE CORRER (INTRO) */
-    /* ===================== */
+    /* PORTA */
     #sliding-door{
       position:fixed;
       inset:0;
       z-index:9999;
       pointer-events:none;
-
-      /* PNG que você vai colocar */
-      background: url("porta.png") center / cover no-repeat;
-
+      background:url("porta.png") center/cover no-repeat;
       animation: slideDoor 1.6s cubic-bezier(.2,.9,.2,1) forwards;
-      animation-delay: .35s;
-      will-change: transform, opacity;
+      animation-delay:.35s;
     }
     @keyframes slideDoor{
-      0%   { transform: translateX(0); }
-      100% { transform: translateX(-112%); }
-    }
-    @media (prefers-reduced-motion: reduce){
-      #sliding-door{ animation:none; opacity:0; visibility:hidden; }
-      .bg-slide{ animation: none; opacity: 1; }
-      .icon-img{ animation: none; }
+      from{ transform:translateX(0); }
+      to{ transform:translateX(-112%); }
     }
 
-    /* ===================== */
-    /* FUNDO: SLIDES + ZOOM (KEN BURNS) */
-    /* ===================== */
+    /* FUNDO */
     .bg-slide{
       position:fixed;
       inset:0;
       background-size:cover;
       background-position:center;
-      background-repeat:no-repeat;
-      z-index:-3;
       opacity:0;
-
-      animation:
-        slideShow 32s infinite,
-        bgZoom 9s ease-in-out infinite;
-
-      transform: scale(1.04);
-      will-change: transform, opacity;
+      z-index:-3;
+      animation: slideShow 32s infinite, bgZoom 9s ease-in-out infinite;
     }
-
-    .bg1{ background-image:url("fundo1.png"); animation-delay:0s, 0s; }
-    .bg2{ background-image:url("fundo2.png"); animation-delay:8s, 0s; }
-    .bg3{ background-image:url("fundo3.png"); animation-delay:16s, 0s; }
-    .bg4{ background-image:url("fundo4.png"); animation-delay:24s, 0s; }
+    .bg1{ background-image:url("fundo1.png"); animation-delay:0s,0s;}
+    .bg2{ background-image:url("fundo2.png"); animation-delay:8s,0s;}
+    .bg3{ background-image:url("fundo3.png"); animation-delay:16s,0s;}
+    .bg4{ background-image:url("fundo4.png"); animation-delay:24s,0s;}
 
     @keyframes slideShow{
-      0%   { opacity:0; }
-      10%  { opacity:1; }
-      25%  { opacity:1; }
-      35%  { opacity:0; }
-      100% { opacity:0; }
+      0%{opacity:0;}
+      10%,25%{opacity:1;}
+      35%,100%{opacity:0;}
     }
-
     @keyframes bgZoom{
-      0%   { transform: scale(1.06); }
-      100% { transform: scale(1.18); }
+      from{transform:scale(1.06);}
+      to{transform:scale(1.18);}
     }
 
     .bg-glass{
       position:fixed;
       inset:0;
+      background:rgba(0,0,0,.46);
+      backdrop-filter:blur(14px);
       z-index:-2;
-      background: rgba(0,0,0,0.46);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
     }
 
-    /* ===================== */
-    /* CONTEÚDO */
-    /* ===================== */
     .container{
       width:100%;
       max-width:520px;
     }
 
-    /* LOGO - mais previsível e “certinha” */
+    /* LOGO */
     .logo-wrapper{
-      width: 220px;
-      height: 220px;
-      margin: 0 auto;
+      width:220px;
+      height:220px;
+      margin:0 auto;
       display:grid;
       place-items:center;
     }
-
     .profile-pic{
-      width: 190px;
-      height: 190px;
-      border-radius: 50%;
-      object-fit: contain;
-      object-position: center;
-      background: transparent;
-
+      width:190px;
+      height:190px;
+      border-radius:50%;
+      object-fit:contain;
       animation: glowRed 4.8s ease-in-out infinite;
-      filter: drop-shadow(0 0 18px rgba(255, 0, 0, 0.28));
     }
-
     @keyframes glowRed{
-      0%{
-        box-shadow:
-          0 0 18px rgba(255,0,0,0.35),
-          0 0 34px rgba(255,0,0,0.18);
-      }
-      50%{
-        box-shadow:
-          0 0 26px rgba(255,0,0,0.60),
-          0 0 60px rgba(255,0,0,0.28),
-          0 0 110px rgba(255,0,0,0.14);
-      }
-      100%{
-        box-shadow:
-          0 0 18px rgba(255,0,0,0.35),
-          0 0 34px rgba(255,0,0,0.18);
-      }
+      0%,100%{ box-shadow:0 0 18px rgba(255,0,0,.35); }
+      50%{ box-shadow:0 0 50px rgba(255,0,0,.6); }
     }
 
-    /* NOME DA EMPRESA (mantém estilo próprio) */
+    /* NOME */
     .profile-name{
       text-align:center;
-      font-size: 34px;
-      font-weight: 800;
-      letter-spacing: 0.2px;
-      margin: 24px 0 18px;
-      color: var(--text-soft);
-      text-shadow: 0 2px 18px rgba(0,0,0,0.45);
+      font-size:34px;
+      font-weight:800;
+      margin:24px 0 18px;
     }
 
-    /* TÍTULOS (mantém estilo próprio) */
+    /* TÍTULOS */
     h2{
       text-align:center;
-      font-size: 30px;
-      color: var(--title-color);
-      margin: 34px 0 18px;
-      text-shadow: 0 0 10px rgba(255,212,0,0.35);
-      letter-spacing: 0.2px;
+      font-size:30px;
+      color:var(--title-color);
+      margin:34px 0 18px;
     }
 
-    /* CARDS */
+    /* BOTÕES */
     .link-card{
-      background: rgba(255,255,255,0.10);
-      padding: 18px 18px;
-      border-radius: 14px;
-      margin: 14px 0;
-
+      background:rgba(255,255,255,.1);
+      padding:18px;
+      border-radius:14px;
+      margin:14px 0;
       display:flex;
       align-items:center;
-      gap: 14px;
-
-      /* padrão tipográfico do site (não é título nem nome) */
-      font-size: 20px;
-      font-weight: 600;
-      letter-spacing: 0.1px;
-
+      gap:14px;
+      font-size:20px;
+      font-weight:400;
       text-decoration:none;
-      color: var(--text-soft);
-
-      border: 1px solid rgba(255,255,255,0.16);
-      transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease, background .22s ease;
+      color:var(--text-soft);
+      border:1px solid rgba(255,255,255,.16);
+      transition:.22s;
     }
-
     .link-card:hover{
-      transform: translateY(-3px);
-      border-color: rgba(255,255,255,0.22);
-      background: rgba(255,255,255,0.13);
-      box-shadow:
-        0 0 14px rgba(255, 59, 59, 0.22),
-        0 0 28px rgba(255, 59, 59, 0.16);
+      transform:translateY(-3px);
+      background:rgba(255,255,255,.13);
+      box-shadow:0 0 18px rgba(255,59,59,.25);
     }
 
-    /* ÍCONES */
     .icon-img{
-      width: 34px;
-      height: 34px;
-      flex: 0 0 auto;
-
-      filter: drop-shadow(0 0 6px rgba(255, 59, 59, 0.35));
-      animation: iconFloat 3.6s ease-in-out infinite;
-      transform-origin: center;
-    }
-
-    @keyframes iconFloat{
-      0%   { transform: translateY(0) scale(1); opacity: 0.96; }
-      50%  { transform: translateY(-3px) scale(1.03); opacity: 1; }
-      100% { transform: translateY(0) scale(1); opacity: 0.96; }
+      width:34px;
+      height:34px;
     }
 
     /* CONTATO */
     .contato-box{
-      margin-top: 18px;
-      padding: 20px;
-      border-radius: 14px;
-      background: rgba(255,255,255,0.10);
-      border: 1px solid rgba(255,255,255,0.16);
-
-      /* padrão tipográfico */
-      font-size: 20px;
-      font-weight: 600;
-      letter-spacing: 0.1px;
+      margin-top:18px;
+      padding:20px;
+      border-radius:14px;
+      background:rgba(255,255,255,.1);
+      border:1px solid rgba(255,255,255,.16);
+      font-size:20px;
     }
-
     .contato-item{
       display:flex;
       align-items:center;
-      gap: 12px;
-      margin: 14px 0;
-      color: var(--text-soft);
+      gap:12px;
+      margin:14px 0;
+    }
+    .contato-item img{
+      width:26px;
     }
 
-    .contato-item img{
-      width: 26px;
-      height: 26px;
-      filter: none !important;
-      animation: none !important;
+    .wa-link{
+      color:var(--text-soft);
+      text-decoration:none;
+      font-weight:400;
+    }
+    .wa-link:hover{
+      text-decoration:underline;
     }
 
     footer{
-      margin-top: 46px;
-      opacity: 0.65;
-      font-size: 14px;
+      margin-top:46px;
+      font-size:14px;
+      opacity:.65;
       text-align:center;
-      color: rgba(255,255,255,0.8);
-      letter-spacing: 0.2px;
     }
 
-    /* Mobile */
-    @media (max-width: 420px){
-      body{ padding: 34px 16px; }
-
-      .logo-wrapper{ width: 200px; height: 200px; }
-      .profile-pic{ width: 170px; height: 170px; }
-
-      .profile-name{ font-size: 30px; }
-      h2{ font-size: 28px; }
-
-      .link-card{ font-size: 18px; padding: 16px 14px; }
-      .contato-box{ font-size: 18px; }
-      .icon-img{ width: 32px; height: 32px; }
+    @media (max-width:420px){
+      .profile-name{font-size:30px;}
+      h2{font-size:28px;}
+      .link-card,.contato-box{font-size:18px;}
     }
   </style>
 </head>
 
 <body>
-  <!-- PORTA DE CORRER -->
-  <div id="sliding-door" aria-hidden="true"></div>
+  <div id="sliding-door"></div>
 
-  <!-- SLIDES -->
   <div class="bg-slide bg1"></div>
   <div class="bg-slide bg2"></div>
   <div class="bg-slide bg3"></div>
@@ -308,7 +209,6 @@
   <div class="bg-glass"></div>
 
   <div class="container">
-    <!-- LOGO -->
     <div class="logo-wrapper">
       <img src="PeresLogo.png" class="profile-pic" alt="Logo Esquadrias Peres">
     </div>
@@ -317,26 +217,27 @@
 
     <h2>Redes Sociais</h2>
 
-    <a href="https://www.instagram.com/humornacompra/" class="link-card" target="_blank" rel="noopener">
-      <img src="instagram.png" class="icon-img" alt="Instagram"> Instagram
+    <a href="https://www.instagram.com/humornacompra/" class="link-card" target="_blank">
+      <img src="instagram.png" class="icon-img"> Instagram
     </a>
 
-    <a href="https://www.tiktok.com/@humornacompra" class="link-card" target="_blank" rel="noopener">
-      <img src="tiktok.png" class="icon-img" alt="TikTok"> TikTok
+    <a href="https://www.tiktok.com/@humornacompra" class="link-card" target="_blank">
+      <img src="tiktok.png" class="icon-img"> TikTok
     </a>
 
-    <a href="https://x.com/humornacompra" class="link-card" target="_blank" rel="noopener">
-      <img src="x.png" class="icon-img" alt="X"> X (Twitter)
+    <a href="https://x.com/humornacompra" class="link-card" target="_blank">
+      <img src="x.png" class="icon-img"> X (Twitter)
     </a>
 
     <h2>Contato</h2>
 
     <div class="contato-box">
       <div class="contato-item">
-        <img src="email.png" alt="Email"> esquadriasperes@gmail.com
+        <img src="email.png"> esquadriasperes@gmail.com
       </div>
       <div class="contato-item">
-        <img src="whatsapp.png" alt="WhatsApp"> WhatsApp
+        <img src="whatsapp.png">
+        <a href="https://wa.me/5599999999999" target="_blank" class="wa-link">Wa.me</a>
       </div>
     </div>
   </div>
@@ -346,13 +247,9 @@
   </footer>
 
   <script>
-    window.addEventListener("load", () => {
-      const door = document.getElementById("sliding-door");
-      if (!door) return;
-
-      // Remove após a animação terminar (1.6s) + delay (0.35s) + respiro
-      const totalMs = 1600 + 350 + 300;
-      setTimeout(() => door.remove(), totalMs);
+    window.addEventListener("load",()=>{
+      const door=document.getElementById("sliding-door");
+      setTimeout(()=>door.remove(),2300);
     });
   </script>
 </body>
